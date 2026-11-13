@@ -7,6 +7,8 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const membershipRoutes = require('./routes/membershipRoutes');
+const meRoutes = require('./routes/meRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -24,6 +26,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/groups', groupRoutes);
+app.use('/api/memberships', membershipRoutes);
+app.use('/api/me', meRoutes);
 
 // These two must come last
 app.use(notFound);
