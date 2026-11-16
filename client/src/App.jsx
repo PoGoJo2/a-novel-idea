@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar.jsx';
 import PaperBackground from './components/PaperBackground.jsx';
+import AiAssistant from './components/AiAssistant.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import BrowsePage from './pages/BrowsePage.jsx';
 import BookPage from './pages/BookPage.jsx';
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+      <AiAssistant />
     </>
   );
 }

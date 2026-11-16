@@ -9,6 +9,7 @@ const bookRoutes = require('./routes/bookRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
 const meRoutes = require('./routes/meRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/me', meRoutes);
+app.use('/api/ai', aiRoutes);
 
 // These two must come last
 app.use(notFound);
