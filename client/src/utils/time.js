@@ -30,3 +30,10 @@ export function nextMeetingLabel(isoUtc, zone) {
   const shown = DateTime.fromISO(isoUtc, { zone: 'utc' }).setZone(zone);
   return shown.isValid ? shown.toFormat('ccc, LLL d') : '';
 }
+
+// "Thu, Nov 19 · 7:00 PM" for a meeting time stored in UTC, shown in the viewer's time zone
+export function meetingDateTime(isoUtc, zone) {
+  if (!isoUtc) return '';
+  const shown = DateTime.fromISO(isoUtc, { zone: 'utc' }).setZone(zone);
+  return shown.isValid ? shown.toFormat("ccc, LLL d '·' h:mm a") : '';
+}
