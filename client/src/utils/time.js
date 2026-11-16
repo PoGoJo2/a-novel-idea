@@ -23,3 +23,10 @@ export const bookStyle = (book) => ({
   '--accent': book.accentColors?.accent || '#22365C',
   '--ribbon': book.accentColors?.ribbon || '#D8B25A',
 });
+
+// "Thu, Nov 19" for the next meeting of a slot, in the viewer's time zone (empty if unknown)
+export function nextMeetingLabel(isoUtc, zone) {
+  if (!isoUtc) return '';
+  const shown = DateTime.fromISO(isoUtc, { zone: 'utc' }).setZone(zone);
+  return shown.isValid ? shown.toFormat('ccc, LLL d') : '';
+}

@@ -61,7 +61,7 @@ body {
 h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; font-style: italic; margin: 0 0 8px; line-height: 1.2; }
 h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); }
 a { color: var(--teal-text); }
-.page { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+.page { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
 .paper-bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .eyebrow { font: italic 13px Georgia, serif; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal-text); margin: 0 0 4px; }
 .rule { border: 0; border-top: 3px double var(--divider); margin: 12px 0 20px; }
@@ -241,3 +241,86 @@ input, select {
   .shelf { --shelf-scale: 0.7; height: 80px; }
   .auth-page { padding-bottom: 110px; }
 }
+
+/* ---------- Cover artwork ---------- */
+.cover-art {
+  position: relative;
+  background: #222;
+  box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+.cover-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cover-art .cover-title, .cover-art .cover-author { position: relative; z-index: 1; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75); }
+/* the dark spine edge on the left of the book */
+.cover-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.38) 0, rgba(0, 0, 0, 0.38) 5%, rgba(255, 255, 255, 0.14) 5.6%, transparent 10%);
+}
+
+/* ---------- Genre banners ---------- */
+.genre-banner {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  height: 96px; margin: 0 0 14px; overflow: hidden; background: #222;
+  border: 3px double var(--border); border-radius: 6px; box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.25);
+}
+.banner-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.banner-plate {
+  position: relative; z-index: 1; padding: 6px 48px; text-align: center;
+  background: rgba(8, 16, 28, 0.62);
+  border-top: 1.5px solid #e6c877; border-bottom: 1.5px solid #e6c877;
+  clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%);
+}
+.banner-title { margin: 0; color: #fdf6e3; font-size: 1.7rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+.banner-count { display: block; color: #e9dfc8; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; }
+@media (max-width: 640px) {
+  .genre-banner { height: 82px; }
+  .banner-title { font-size: 1.35rem; }
+  .banner-plate { padding: 5px 34px; }
+}
+
+/* Smaller covers (the side books in a carousel) need smaller lettering */
+.side-cover .cover-title { font-size: 0.72rem; overflow-wrap: anywhere; }
+.side-cover .cover-author { font-size: 0.58rem; overflow-wrap: anywhere; }
+.side-cover .cover { padding: 8px 7px; }
+
+/* ---------- Genre border artwork in both side margins ---------- */
+.carousel { position: relative; }
+.genre-border { position: absolute; top: 0; width: clamp(90px, calc(50vw - 640px), 190px); height: 100%; color: var(--vine); opacity: 0.95; pointer-events: none; }
+.genre-border.left { right: calc(100% + 84px); }
+.genre-border.right { left: calc(100% + 84px); transform: scaleX(-1); }
+.genre-border svg { display: block; width: 100%; height: 100%; }
+
+/* The vine that bends from the border around each scroll arrow */
+.arrow-vine { position: absolute; top: 0; height: 100%; width: 100px; color: var(--vine); pointer-events: none; }
+.arrow-vine.left { left: -78px; }
+.arrow-vine.right { right: -78px; transform: scaleX(-1); }
+@media (max-width: 1439px) { .genre-border, .arrow-vine { display: none; } }
+
+/* ---------- Book page ---------- */
+.book-page { display: flex; flex-direction: column; gap: 22px; max-width: 720px; margin: 0 auto; }
+.panel { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); }
+.panel h2 { font-size: 1.3rem; }
+.small { font-size: 0.85rem; }
+.notice { background: var(--tag-day-bg); color: var(--tag-day-fg); border-radius: 8px; padding: 10px 14px; margin: 12px 0 0; font-weight: 600; }
+.slot-picker { border: 0; margin: 14px 0 0; padding: 0; min-width: 0; }
+.slot-picker legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
+.slot-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.slot-option { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 12px 40px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; background: var(--card); }
+.slot-option input { position: absolute; left: 14px; top: 16px; width: 18px; height: 18px; accent-color: var(--teal); }
+.slot-option.selected { border-color: var(--teal-text); box-shadow: 0 0 0 2px var(--teal-text); background: var(--tag-day-bg); color: var(--tag-day-fg); }
+.slot-option.full { opacity: 0.55; cursor: not-allowed; }
+.slot-time { font-weight: 700; font-size: 1.05rem; }
+.slot-note, .slot-next { font-size: 0.85rem; }
+.slot-next { opacity: 0.85; }
+.join-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.week-list { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.week { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--divider); border-radius: 8px; }
+.week.current { border-color: var(--teal-text); border-width: 2px; }
+.week-num { font-weight: 700; min-width: 64px; }
+.week .btn-small { margin-left: auto; }
+.btn-small { min-height: 32px; padding: 4px 12px; font-size: 13px; }
+.help-list { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 560px) { .slot-options { grid-template-columns: 1fr; } }
