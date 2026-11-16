@@ -297,7 +297,15 @@ input, select {
 .arrow-vine { position: absolute; top: 0; height: 100%; width: 100px; color: var(--vine); pointer-events: none; }
 .arrow-vine.left { left: -78px; }
 .arrow-vine.right { right: -78px; transform: scaleX(-1); }
-@media (max-width: 1439px) { .genre-border, .arrow-vine { display: none; } }
+/* Laptop-sized screens: narrow the row a little so the borders still fit beside it */
+@media (min-width: 1000px) and (max-width: 1439px) {
+  .carousel { width: calc(100vw - 460px); max-width: 1060px; margin-left: auto; margin-right: auto; }
+  .genre-border { width: 140px; right: auto; }
+  .genre-border.left { right: calc(100% + 80px); }
+  .genre-border.right { left: calc(100% + 80px); }
+}
+/* Tablets and phones: no side borders */
+@media (max-width: 999px) { .genre-border, .arrow-vine { display: none; } }
 
 /* ---------- Book page ---------- */
 .book-page { display: flex; flex-direction: column; gap: 22px; max-width: 720px; margin: 0 auto; }

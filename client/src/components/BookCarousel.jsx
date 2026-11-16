@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import BookCover from './BookCover.jsx';
 import BookTile from './BookTile.jsx';
+import GenreBanner from './GenreBanner.jsx';
+import GenreBorder, { ArrowVine } from './GenreBorder.jsx';
 
 // A row of books for one genre: one large book in the middle, smaller covers on each side,
 // and arrow buttons to move through the list.
@@ -12,8 +14,12 @@ export default function BookCarousel({ title, groups, zone }) {
 
   return (
     <section className="carousel" aria-label={`${title} books`}>
-      <h2 className="carousel-title">{title}</h2>
+      <GenreBorder genre={title} side="left" />
+      <GenreBorder genre={title} side="right" />
+      <GenreBanner genre={title} count={groups.length} />
       <div className="carousel-stage">
+        <ArrowVine side="left" />
+        <ArrowVine side="right" />
         <button type="button" className="carousel-arrow left" onClick={() => go(-1)} disabled={index === 0} aria-label={`Previous ${title} book`}>
           &#8249;
         </button>
