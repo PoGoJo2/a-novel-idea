@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import * as bookingService from '../services/bookingService.js';
 import { viewerZone, meetingDateTime } from '../utils/time.js';
 import MeetingCard from '../components/MeetingCard.jsx';
+import GroupCatchUp from '../components/GroupCatchUp.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
@@ -30,7 +31,7 @@ export default function DashboardPage() {
     .sort((a, b) => new Date(a.nextMeetingUtc) - new Date(b.nextMeetingUtc))[0];
 
   return (
-    <div className="dashboard">
+    <div className="dashboard dashboard-wide">
       <p className="eyebrow">My meetings</p>
       <h1>Hi, {user.name.split(' ')[0]}</h1>
       <hr className="rule" />
@@ -44,7 +45,7 @@ export default function DashboardPage() {
       ) : (
         <>
           {upcoming && (
-            <section className="panel next-meeting" aria-labelledby="next-title">
+            <section className="panel next-meeting next-top" aria-labelledby="next-title">
               <h2 id="next-title">Your next meeting</h2>
               <p className="next-when">{meetingDateTime(upcoming.nextMeetingUtc, zone)}</p>
               <p className="muted">{upcoming.group.book.title} · {zone}</p>
@@ -56,21 +57,23 @@ export default function DashboardPage() {
             </section>
           )}
 
-          <h2 className="section-title">My reading groups</h2>
-          <div className="my-groups">
-            {memberships.map((m) => (
-              <MeetingCard key={m.id} membership={m} zone={zone} />
-            ))}
-          </div>
-
-          <div className="dash-extras">
-            <section className="panel">
-              <h2>Weekly notes</h2>
-              <p className="muted">Notes from each meeting will appear here so you can catch up if you miss one.</p>
+          <div className="dash-tiles">
+            <section className="dash-tile" aria-labelledby="groups-title">
+              <h2 id="groups-title">My reading groups</h2>
+              <div className="tile-scroll my-groups">
+                {memberships.map((m) => (
+                  <MeetingCard key={m.id} membership={m} zone={zone} />
+                ))}
+              </div>
             </section>
-            <section className="panel">
-              <h2>One-on-ones</h2>
-              <p className="muted">Book a private session with your group leader to stay on track. Coming soon.</p>
+
+            <section className="dash-tile" aria-labelledby="catchup-title">
+              <h2 id="catchup-title">Catch up</h2>
+              <div className="tile-scroll my-groups">
+                {memberships.map((m) => (
+                  <GroupCatchUp key={m.id} membership={m} zone={zone} />
+                ))}
+              </div>
             </section>
           </div>
         </>

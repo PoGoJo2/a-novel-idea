@@ -1,16 +1,25 @@
 import { Link } from 'react-router-dom';
 import BookCover from './BookCover.jsx';
+import SaveButtons from './SaveButtons.jsx';
 import { bookStyle, slotLabel } from '../utils/time.js';
 
 // The large, centered tile in a carousel: cover, title, both meeting times, and a link to join.
-export default function BookTile({ group, zone }) {
+export default function BookTile({ group, zone, goal }) {
   const { book, timeSlots } = group;
   return (
     <article className="tile bx" style={bookStyle(book)}>
       <span className="ribbon" aria-hidden="true" />
-      <BookCover book={book} />
+      <div className="cover-wrap">
+        <BookCover book={book} />
+        <SaveButtons bookId={book.id} title={book.title} />
+      </div>
       <h3 className="tile-title">{book.title}</h3>
       <p className="muted">{book.author}</p>
+      {goal && (
+        <p className="tile-goal">
+          <strong>Week {goal.weekNumber}:</strong> {goal.chapters}
+        </p>
+      )}
       <ul className="slot-list">
         {timeSlots.map((slot) => (
           <li key={slot.id}>

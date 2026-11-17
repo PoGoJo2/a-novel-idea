@@ -3,11 +3,14 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import * as catalogService from '../services/catalogService.js';
 import * as bookingService from '../services/bookingService.js';
+import * as tools from '../services/memberToolsService.js';
+import * as goalService from '../services/goalService.js';
 import { viewerZone } from '../utils/time.js';
 import BookCover from '../components/BookCover.jsx';
 import TimeSlotPicker from '../components/TimeSlotPicker.jsx';
 import WeeklySchedule from '../components/WeeklySchedule.jsx';
 import ReadingHelp from '../components/ReadingHelp.jsx';
+import SaveButtons from '../components/SaveButtons.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
@@ -18,6 +21,8 @@ export default function BookPage() {
   const location = useLocation();
   const { user } = useAuth();
   const [book, setBook] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [membership, setMembership] = useState(null); // this reader's active booking for this book
   const [chosen, setChosen] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,11 +34,16 @@ export default function BookPage() {
     const data = await catalogService.getBook(id);
     setBook(data.book);
     const groupId = data.book.groups[0]?.id;
+    // The weekly reading goals are public, so everyone can see them
+    setGoals(groupId ? (await goalService.getGoals(groupId).catch(() => ({ goals: [] }))).goals : []);
     if (user && groupId) {
       const mine = await bookingService.getMyMemberships();
-      setMembership(mine.memberships.find((m) => m.group.id === groupId) || null);
+      const found = mine.memberships.find((m) => m.group.id === groupId) || null;
+      setMembership(found);
+      setNotes(found ? (await tools.getNotes(groupId)).notes : []);
     } else {
       setMembership(null);
+      setNotes([]);
     }
   }, [id, user]);
 
@@ -84,6 +94,7 @@ export default function BookPage() {
         <BookCover book={book} className="cover-large" />
         <h1>{book.title}</h1>
         <p className="muted">{book.author} · {book.genre}{book.pageCount ? ` · ${book.pageCount} pages` : ''}</p>
+        <SaveButtons bookId={book.id} title={book.title} variant="labeled" />
         <p className="lead">{book.description}</p>
       </div>
 
@@ -158,7 +169,7 @@ export default function BookPage() {
             )}
           </section>
 
-          <WeeklySchedule totalWeeks={group.totalWeeks} currentWeek={group.currentWeek} isMember={Boolean(membership)} />
+          <WeeklySchedule totalWeeks={group.totalWeeks} currentWeek={group.currentWeek} isMember={Boolean(membership)} notes={notes} goals={goals} />
           <ReadingHelp isMember={Boolean(membership)} />
         </>
       )}

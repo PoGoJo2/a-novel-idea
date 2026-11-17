@@ -1,23 +1,36 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import * as catalogService from '../services/catalogService.js';
+import * as goalService from '../services/goalService.js';
 import { viewerZone } from '../utils/time.js';
 import BookCarousel from '../components/BookCarousel.jsx';
 import SearchFilters from '../components/SearchFilters.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
+// Hand-picked favorites shown in the Top Recommended row (matched by title)
+const TOP_PICKS = [
+  'Pride and Prejudice', 'The Hobbit', 'Dune', 'And Then There Were None',
+  'Frankenstein', 'Fahrenheit 451', 'A Wizard of Earthsea', 'The Time Machine',
+];
+
 export default function BrowsePage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState({ q: '', genre: '', day: '' });
   const [genres, setGenres] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [goals, setGoals] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   // The list of genres for the filter menu (loaded once)
   useEffect(() => {
     catalogService.getGenres().then((data) => setGenres(data.genres)).catch(() => {});
+  }, []);
+
+  // This week's reading goal for each group, shown on the book cards
+  useEffect(() => {
+    goalService.getCurrentGoals().then((data) => setGoals(data.goals)).catch(() => {});
   }, []);
 
   // Reload the groups whenever a filter changes (small delay while typing)
@@ -47,6 +60,10 @@ export default function BrowsePage() {
     return acc;
   }, {});
 
+  // The Top Recommended row only shows when nobody is searching or filtering
+  const noFilters = !filters.q && !filters.genre && filters.day === '';
+  const topGroups = TOP_PICKS.map((title) => groups.find((g) => g.book.title === title)).filter(Boolean);
+
   return (
     <div>
       <p className="eyebrow">The journey</p>
@@ -62,9 +79,13 @@ export default function BrowsePage() {
         <p className="empty">No groups match your search. Try a different word, genre, or day.</p>
       )}
 
+      {!loading && !error && noFilters && topGroups.length >= 3 && (
+        <BookCarousel title="Top Recommended" groups={topGroups} zone={viewerZone(user)} goals={goals} />
+      )}
+
       {!loading &&
         Object.entries(byGenre).map(([genre, list]) => (
-          <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} />
+          <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} goals={goals} />
         ))}
     </div>
   );
