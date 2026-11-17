@@ -353,3 +353,6 @@ input, select {
   .my-info .join-actions { justify-content: center; }
   .dash-extras { grid-template-columns: 1fr; }
 }
+/* Sign up button in the top bar: dark text on the cream button */
+.nav .nav-actions .btn-nav-solid { color: #17595a !important; }
+:root[data-theme='dark'] .nav .nav-actions .btn-nav-solid { color: #0e3b3c !important; }

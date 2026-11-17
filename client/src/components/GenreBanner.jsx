@@ -12,6 +12,7 @@ const THEMES = {
   Fantasy: { accent: '#4b3590', ribbon: '#d8b25a' },
   Classics: { accent: '#7a1f2e', ribbon: '#d8b25a' },
   'Science Fiction': { accent: '#1f5f78', ribbon: '#e8c46a' },
+  'Top Recommended': { accent: '#6b2236', ribbon: '#f0cd6e' },
 };
 const FALLBACK = { accent: '#2d5a52', ribbon: '#e8c46a' };
 
@@ -120,6 +121,28 @@ function scifi(c, uid) {
   );
 }
 
+function recommended(c) {
+  const star = (cx, cy, r) => {
+    const pts = Array.from({ length: 10 }, (_, i) => {
+      const a = (-90 + i * 36) * (Math.PI / 180);
+      const rad = i % 2 === 0 ? r : r * 0.42;
+      return `${(cx + rad * Math.cos(a)).toFixed(1)},${(cy + rad * Math.sin(a)).toFixed(1)}`;
+    });
+    return pts.join(' ');
+  };
+  const big = [[90, 48, 20], [168, 30, 11], [236, 62, 8], [560, 62, 8], [632, 30, 11], [710, 48, 20]];
+  return (
+    <>
+      {stars(c, 30, 88)}
+      <line x1="0" y1="9" x2={W} y2="9" stroke={c.ribbon} strokeWidth="1" opacity="0.8" />
+      <line x1="0" y1="87" x2={W} y2="87" stroke={c.ribbon} strokeWidth="1" opacity="0.8" />
+      {big.map(([cx, cy, r]) => (
+        <g key={`st-${cx}`} filter={c.shadow}><polygon points={star(cx, cy, r)} fill={c.ribbon} stroke={c.dark} strokeWidth="0.8" /></g>
+      ))}
+    </>
+  );
+}
+
 function waves(c) {
   return (
     <>
@@ -145,7 +168,7 @@ export default function GenreBanner({ genre, count }) {
     rr: (min, max) => min + rng() * (max - min),
     shadow: `url(#shadow-${uid})`,
   };
-  const art = { Mystery: mystery, Fantasy: fantasy, Classics: classics, 'Science Fiction': scifi }[genre] || waves;
+  const art = { Mystery: mystery, Fantasy: fantasy, Classics: classics, 'Science Fiction': scifi, 'Top Recommended': recommended }[genre] || waves;
 
   return (
     <div className="genre-banner">

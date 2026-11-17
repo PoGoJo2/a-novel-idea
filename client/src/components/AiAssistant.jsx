@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, matchPath, useLocation } from 'react-router-dom';
 import { askAssistant } from '../services/aiService.js';
+import AiMascot from './AiMascot.jsx';
 
 const SEEN_KEY = 'ani_ai_seen';
 const GREETING = {
@@ -13,7 +14,7 @@ const safeStorage = {
   set: () => { try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* storage may be blocked */ } },
 };
 
-// The AI helper: pops up on the home page the first time, and is an "Ask AI" button on every other page.
+// The AI helper: pops up on the home page the first time, and is an "Ask AI" button (with a waving book character beside it) on every page.
 export default function AiAssistant() {
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -69,9 +70,16 @@ export default function AiAssistant() {
   return (
     <>
       {!open && (
-        <button type="button" className="ai-launcher" onClick={() => setOpen(true)} aria-label="Open the AI reading helper">
-          <span aria-hidden="true">✦</span> Ask AI
-        </button>
+        <div className="ai-dock">
+          {/* The bubble shows for a few seconds on each page, then fades away */}
+          <p className="ai-bubble" key={location.pathname} aria-hidden="true">Need a book?</p>
+          <button type="button" className="ai-mascot" onClick={() => setOpen(true)} tabIndex={-1} aria-hidden="true">
+            <AiMascot />
+          </button>
+          <button type="button" className="ai-launcher" onClick={() => setOpen(true)} aria-label="Open the AI reading helper">
+            <span aria-hidden="true">✦</span> Ask AI
+          </button>
+        </div>
       )}
 
       {open && (

@@ -1,0 +1,197 @@
+/* =====================================================================
+   Book stacks, the AI book character, the taller top bar, Favorite / Save
+   buttons, My Library, and the two-tile dashboard.
+   This file loads last, so it can adjust earlier styles without editing them.
+   ===================================================================== */
+
+/* ---------- Dark theme: lighter tan tiles and brighter text on them ---------- */
+:root[data-theme='dark'] {
+  --card: #735f3f;
+  --muted: #eadfc8;
+  --teal-text: #b4f0e8;
+}
+
+/* ---------- Top bar: taller, and its bottom edge fades into the page ---------- */
+.nav {
+  position: relative; z-index: 5;
+  gap: 22px; padding: 16px 28px 42px;
+  background: linear-gradient(to bottom, var(--nav) 0%, var(--nav) 55%, transparent 100%);
+  border-bottom: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.nav-logo svg { width: 270px; max-width: 100%; height: auto; }
+.nav-links { gap: 24px; }
+.nav-links a { font-size: 1.08rem; }
+.nav .nav-actions .btn-nav-solid { color: #17595a !important; text-shadow: none; }
+:root[data-theme='dark'] .nav .nav-actions .btn-nav-solid { color: #0e3b3c !important; }
+.theme-toggle button.on, .nav .btn-nav-solid { text-shadow: none; }
+@media (max-width: 640px) { .nav { padding: 10px 12px 28px; gap: 12px; } .nav-logo svg { width: 200px; } }
+
+/* ---------- Book stacks in the side margins (every page) ---------- */
+.book-stacks { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.book-stacks .stack { position: absolute; bottom: 0; width: clamp(60px, calc((100vw - 1100px) / 2 - 14px), 170px); }
+.book-stacks .stack-left { left: 8px; }
+.book-stacks .stack-right { right: 8px; }
+.book-stacks svg { display: block; width: 100%; height: auto; max-height: calc(100vh - 130px); }
+/* narrower windows: slim strips of the stacks, and the page gets side room so nothing is covered */
+@media (max-width: 1239px) {
+  .book-stacks .stack { width: clamp(40px, 7vw, 170px); }
+  .book-stacks .stack svg { width: 100%; height: auto; max-height: calc(100vh - 130px); }
+  .page.has-sides { padding-left: calc(clamp(40px, 7vw, 170px) + 14px) !important; padding-right: calc(clamp(40px, 7vw, 170px) + 14px) !important; }
+}
+
+/* ---------- AI helper: waving book beside the Ask AI button ---------- */
+.ai-dock { position: fixed; right: 20px; bottom: 14px; z-index: 50; display: flex; align-items: flex-end; }
+.ai-dock .ai-launcher { position: relative; right: auto; bottom: auto; margin-bottom: 4px; }
+.ai-mascot { width: 104px; height: 122px; margin: 0 -10px -6px 0; padding: 0; border: 0; background: none; cursor: pointer; flex: none; }
+.ai-mascot-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+:root[data-theme='dark'] .ai-mascot-svg { filter: drop-shadow(0 0 2px #f1e6d0) drop-shadow(0 0 7px rgba(241, 230, 208, 0.45)); }
+.ai-bubble {
+  position: absolute; right: calc(100% + 2px); bottom: 84px; margin: 0; padding: 6px 12px; white-space: nowrap;
+  background: var(--card); color: var(--ink); border: 1.5px solid var(--border); border-radius: 12px;
+  font: 600 13px system-ui, sans-serif; animation: ai-bubble 7s ease forwards;
+}
+.ai-bubble::after { content: ''; position: absolute; right: -7px; bottom: 10px; width: 12px; height: 12px; background: var(--card); border-right: 1.5px solid var(--border); border-top: 1.5px solid var(--border); transform: rotate(45deg); }
+@keyframes ai-bubble { 0%, 82% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+.m-bob { animation: m-bob 2.6s ease-in-out infinite; transform-origin: 80px 180px; }
+.m-arm { animation: m-wave 1s ease-in-out infinite; transform-origin: 136px 104px; }
+.m-eye { animation: m-blink 4.5s infinite; transform-box: fill-box; transform-origin: center; }
+.m-stache { animation: m-stache 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.m-page { animation: m-flutter 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 0% 100%; }
+.m-page:nth-of-type(2) { animation-delay: -0.4s; }
+.m-page:nth-of-type(3) { animation-delay: -0.8s; }
+@keyframes m-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes m-wave { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(24deg); } }
+@keyframes m-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } }
+@keyframes m-stache { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(1.05); } }
+@keyframes m-flutter { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(7deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .m-bob, .m-arm, .m-eye, .m-stache, .m-page, .ai-bubble { animation: none; }
+}
+@media (max-width: 520px) {
+  .ai-dock { right: 12px; bottom: 10px; }
+  .ai-mascot { width: 72px; height: 85px; }
+  .ai-bubble { display: none; }
+}
+
+/* ---------- Favorite and Save for next time ---------- */
+.cover-wrap { position: relative; width: 100%; }
+.cover-actions { position: absolute; top: 6px; right: 6px; z-index: 2; display: flex; flex-direction: column; gap: 6px; }
+.icon-btn {
+  display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; cursor: pointer;
+  border-radius: 50%; border: 1.5px solid #1a100a; background: rgba(247, 237, 211, 0.96); color: #1a100a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.icon-btn svg { width: 19px; height: 19px; }
+.icon-btn.on.fav { background: #c43a2b; color: #fff; }
+.icon-btn.on.sav { background: #16295a; color: #fff; }
+.icon-btn:hover { transform: scale(1.08); }
+
+.save-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 4px 0; }
+.save-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; cursor: pointer;
+  border-radius: 8px; border: 1.5px solid var(--teal-text); background: var(--card); color: var(--teal-text);
+  font: 600 14px system-ui, sans-serif;
+}
+.save-btn svg { width: 18px; height: 18px; }
+.save-btn.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.save-btn.on.fav { background: #c43a2b; border-color: #c43a2b; }
+.save-btn.on.sav { background: #16295a; border-color: #16295a; }
+
+/* ---------- My Library ---------- */
+.library-shelf { margin: 8px 0 28px; }
+.library-shelf h2 small { font: 600 0.8rem system-ui, sans-serif; opacity: 0.75; margin-left: 8px; }
+.library-grid { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 22px; }
+.library-book { position: relative; }
+.library-book > a { display: block; }
+.library-book .cover { box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.35), inset 9px 0 0 rgba(20, 40, 50, 0.25); }
+.empty-note { border: 1.5px dashed var(--border); border-radius: 8px; padding: 12px 14px; font-style: italic; margin: 10px 0 0; }
+
+/* ---------- Dashboard: next meeting on top, two big scrolling tiles below ---------- */
+.dashboard-wide { max-width: 1180px; }
+.next-top { width: min(100%, 560px); margin: 0 auto 20px; }
+.dash-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.dash-tile { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); min-width: 0; }
+.dash-tile > h2 { margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1.5px solid var(--divider); font-size: 1.3rem; }
+.tile-scroll { height: min(68vh, 640px); overflow-y: auto; padding-right: 8px; scrollbar-width: thin; scrollbar-color: var(--teal) transparent; }
+.dash-tile .panel, .dash-tile .bx { box-shadow: none; background: color-mix(in srgb, var(--ink) 6%, var(--card)); }
+@media (max-width: 900px) { .dash-tiles { grid-template-columns: 1fr; } .tile-scroll { height: min(60vh, 520px); } }
+.library-book > a { text-decoration: none; color: inherit; }
+
+/* ---------- My Library: shelves to the floor, people reading, Back button ---------- */
+.library-shelves { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.library-shelves .shelf-col { position: absolute; bottom: 30px; }
+.library-shelves .shelf-left { left: 6px; }
+.library-shelves .shelf-right { right: 6px; }
+.library-shelves svg { display: block; width: 100%; height: 100%; }
+/* wide windows: full bookcases */
+.library-shelves .shelf-full { display: none; width: clamp(60px, calc((100vw - 1100px) / 2 - 14px), 170px); top: 96px; }
+.library-shelves .shelf-full svg { max-height: calc(100vh - 126px); }
+@media (min-width: 1240px) { .library-shelves .shelf-full { display: block; } .library-shelves .shelf-slim { display: none; } }
+/* narrow windows: slim shelf strips, content gets side room so nothing is covered */
+.library-shelves .shelf-slim { top: 96px; width: clamp(40px, 7vw, 170px); overflow: hidden; }
+.library-shelves .shelf-slim svg { overflow: hidden !important; }
+
+.library { min-height: calc(100vh - 360px); display: flex; flex-direction: column; }
+.library-top { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.library-top .eyebrow { margin: 0; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 16px 4px 12px; cursor: pointer;
+  border-radius: 999px; border: 1.5px solid var(--teal-text); background: var(--card); color: var(--teal-text);
+  font: 600 14px system-ui, sans-serif;
+}
+.back-btn span { font-size: 18px; line-height: 1; }
+.back-btn:hover { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+/* The reading room spans the whole width of the window, at the very bottom of the page */
+.reading-room { position: relative; width: 100vw; height: clamp(96px, 14vw, 210px); margin: auto 0 -60px calc(50% - 50vw); pointer-events: none; }
+.reading-floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 30px; border-top: 2px solid #1a100a;
+  background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 64px), linear-gradient(#8a5a32, #5a3a22);
+  box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.25);
+}
+.reading-room .person { position: absolute; bottom: 12px; }
+.reading-room .person svg { display: block; height: auto; }
+.p-girl svg { width: clamp(82px, 13vw, 195px); }
+.p-boy svg { width: clamp(37px, 5.8vw, 87px); }
+.p-elder svg { width: clamp(56px, 8.9vw, 134px); }
+.p-stack svg { width: clamp(66px, 10.4vw, 156px); }
+.p-girl { left: 6px; }
+.p-boy { left: 31%; }
+.p-elder { left: 49%; }
+.p-stack { right: 12px; }
+
+
+/* ---------- Everything scales together with the window ---------- */
+:root { --cw: clamp(110px, 15vw, 220px); }   /* width of one book cover */
+.tile { width: var(--cw); padding: calc(var(--cw) * 0.055); }
+.cover-large { width: var(--cw); }
+.cover { font-size: clamp(9px, 1.1vw, 16px); padding: 7% 6%; }
+.cover-title { font-size: 1.05em; }
+.cover-author { font-size: 0.75em; }
+.tile-title { font-size: clamp(0.8rem, 1.1vw, 1.1rem); }
+.carousel-track { gap: calc(var(--cw) * 0.07); min-height: calc(var(--cw) * 1.5 + 90px); }
+.slot-1 { width: calc(var(--cw) * 0.5); display: block; }
+.slot-2 { width: calc(var(--cw) * 0.41); display: block; }
+.side-cover .cover-title { font-size: 0.7em; }
+.carousel-stage { padding: 0 clamp(34px, 4vw, 56px); }
+.carousel-arrow { width: clamp(30px, 3.2vw, 44px); height: clamp(30px, 3.2vw, 44px); }
+.library-grid { grid-template-columns: repeat(auto-fill, var(--cw)); gap: calc(var(--cw) * 0.1); justify-content: start; }
+.icon-btn { width: clamp(26px, 2.6vw, 36px); height: clamp(26px, 2.6vw, 36px); }
+
+/* ---------- Genre borders: figures spread over the full height of the row ---------- */
+.genre-border { container-type: size; }
+.genre-border .gb-bands {
+  display: flex; flex-direction: column; justify-content: space-between; align-items: stretch;
+  height: 100%; width: min(100%, calc(100cqh * 220 / 560)); margin: 0 auto;
+}
+.genre-border .gb-band { display: block; width: 100%; height: auto; flex: none; }
+
+/* ---------- Weekly reading goals ---------- */
+.week-goal { font-weight: 700; color: var(--teal-text); font-size: 0.95rem; margin-left: 4px; }
+.week.current .week-goal { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.tile-goal { margin: 0; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.45); border: 1px dashed rgba(60, 40, 20, 0.35); font-size: clamp(0.7rem, 0.95vw, 0.9rem); color: var(--tile-ink, inherit); }
+.goal-rows { list-style: none; margin: 10px 0 14px; padding: 0; display: grid; gap: 8px; }
+.goal-row { display: grid; grid-template-columns: 80px 1fr; gap: 10px; align-items: center; }
+.goal-row input { width: 100%; }

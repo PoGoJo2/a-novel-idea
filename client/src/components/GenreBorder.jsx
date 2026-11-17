@@ -202,17 +202,81 @@ function ClassicsArt() {
   );
 }
 
-const ARTS = { Mystery: MysteryArt, Fantasy: FantasyArt, 'Science Fiction': SciFiArt, Classics: ClassicsArt };
+function RecommendedArt() {
+  const star5 = (cx, cy, r) => {
+    const pts = Array.from({ length: 10 }, (_, i) => {
+      const a = (-90 + i * 36) * (Math.PI / 180);
+      const rad = i % 2 === 0 ? r : r * 0.42;
+      return `${(cx + rad * Math.cos(a)).toFixed(1)} ${(cy + rad * Math.sin(a)).toFixed(1)}`;
+    });
+    return `M${pts.join(' L')} Z`;
+  };
+  return (
+    <g>
+      {/* an unrolled scroll with lines of writing and a wax seal */}
+      <rect x="44" y="52" width="132" height="14" rx="7" />
+      <path d="M54 66 H166 V132 H54" />
+      <rect x="44" y="130" width="132" height="14" rx="7" />
+      <path d="M52 59 q-6 7 0 14 M168 59 q6 7 0 14" strokeWidth="1" />
+      <path d="M70 84 H150 M70 96 H150 M70 108 H138 M70 120 H112" strokeWidth="1.1" />
+      <circle cx="148" cy="116" r="11" />
+      <path d={star5(148, 116, 7)} strokeWidth="1" />
+      <path d="M144 126 L140 150 L148 144 L154 152 L152 127" strokeWidth="1.2" />
+      <path d={star5(50, 24, 11)} /><path d={star5(168, 30, 7)} strokeWidth="1.2" /><path d={star5(100, 180, 6)} strokeWidth="1.2" />
+      <Sparkle x={26} y={96} s={0.8} /><Sparkle x={196} y={92} s={0.9} /><Dot x={120} y={20} /><Dot x={190} y={170} /><Dot x={28} y={160} />
+
+      {/* a golden trophy cup */}
+      <path d="M70 252 H150 V292 Q150 334 110 340 Q70 334 70 292 Z" strokeWidth="2.6" />
+      <path d="M70 264 Q40 262 42 292 Q44 316 74 316 M150 264 Q180 262 178 292 Q176 316 146 316" />
+      <path d="M110 340 V360 M96 360 H124" />
+      <rect x="80" y="360" width="60" height="12" rx="2" />
+      <rect x="68" y="372" width="84" height="12" rx="2" />
+      <path d={star5(110, 294, 17)} strokeWidth="1.6" />
+      <path d="M82 258 V300 Q84 322 100 330" strokeWidth="1" />
+      <path d={star5(36, 244, 8)} strokeWidth="1.2" /><path d={star5(190, 238, 10)} strokeWidth="1.2" />
+      <Sparkle x={26} y={348} s={0.9} /><Sparkle x={196} y={350} s={0.8} /><Dot x={190} y={392} /><Dot x={30} y={396} />
+
+      {/* a prize rosette with ribbons, flanked by laurel branches */}
+      {Array.from({ length: 16 }, (_, i) => {
+        const a = (i * 22.5) * (Math.PI / 180);
+        return <circle key={i} cx={(110 + 31 * Math.cos(a)).toFixed(1)} cy={(452 + 31 * Math.sin(a)).toFixed(1)} r="7" strokeWidth="1.2" />;
+      })}
+      <circle cx="110" cy="452" r="26" /><circle cx="110" cy="452" r="18" strokeWidth="1" />
+      <path d={star5(110, 452, 12)} strokeWidth="1.3" />
+      <path d="M92 478 L80 540 L98 528 L108 548 L110 482 M128 478 L140 540 L122 528 L112 548 L110 482" strokeWidth="1.4" />
+      <Sprig curve={[[40, 548], [28, 500], [38, 450], [64, 410]]} leaves={[0.15, 0.3, 0.45, 0.6, 0.75, 0.9]} leafScale={0.95} bud={false} />
+      <Sprig curve={[[182, 548], [196, 500], [186, 450], [160, 410]]} leaves={[0.15, 0.3, 0.45, 0.6, 0.75, 0.9]} leafScale={0.95} bud={false} />
+      <Sparkle x={110} y={410} s={0.9} />
+    </g>
+  );
+}
+
+const ARTS = { 'Top Recommended': RecommendedArt, Mystery: MysteryArt, Fantasy: FantasyArt, 'Science Fiction': SciFiArt, Classics: ClassicsArt };
+
+// The artwork is cut into bands (y-ranges of the 220 x 560 drawing). The bands are spread down the full
+// height of the row, so the border reaches the bottom of the section however tall the row is.
+const BANDS = {
+  Mystery: [[10, 240], [245, 340], [342, 525]],
+  Fantasy: [[8, 262], [300, 420], [424, 548]],
+  'Science Fiction': [[10, 180], [184, 380], [396, 550]],
+  Classics: [[8, 190], [240, 365], [440, 558]],
+  'Top Recommended': [[8, 195], [232, 390], [398, 556]],
+};
 
 // Which side of the row a border sits on. The right side is the left side mirrored with CSS.
 export default function GenreBorder({ genre, side = 'left' }) {
   const Art = ARTS[genre];
+  const bands = BANDS[genre];
   return (
     <div className={`genre-border ${side}`} aria-hidden="true">
-      {Art ? (
-        <svg viewBox="0 0 220 560" preserveAspectRatio="xMidYMin meet" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-          <Art />
-        </svg>
+      {Art && bands ? (
+        <div className="gb-bands">
+          {bands.map(([y0, y1]) => (
+            <svg key={y0} className="gb-band" viewBox={`0 ${y0} 220 ${y1 - y0}`} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <Art />
+            </svg>
+          ))}
+        </div>
       ) : (
         <FloralArt />
       )}

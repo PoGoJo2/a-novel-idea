@@ -20,6 +20,8 @@ export default function Navbar() {
       <nav className="nav-links" aria-label="Main">
         <NavLink to="/" end>Browse</NavLink>
         {user && <NavLink to="/dashboard">My Meetings</NavLink>}
+        {user && <NavLink to="/library">My Library</NavLink>}
+        {user && (user.role === 'leader' || user.role === 'admin') && <NavLink to="/leader">Leader tools</NavLink>}
       </nav>
       <div className="nav-actions">
         <ThemeToggle />
