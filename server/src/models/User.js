@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
     // Meetings are stored in UTC and shown in each user's own time zone
     timezone: { type: String, default: 'America/New_York' },
     themePreference: { type: String, enum: ['light', 'dark'], default: 'light' },
+    // The reader's own lists: hearted books and books saved for next time (Book ids)
+    favoriteBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
+    savedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
   },
   { timestamps: true }
 );
