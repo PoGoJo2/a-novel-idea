@@ -2,8 +2,8 @@ const User = require('../models/User');
 const Book = require('../models/Book');
 const AppError = require('../utils/AppError');
 
-// The two lists a reader keeps. The key is the field name on the User document.
-const LISTS = { favorites: 'favoriteBooks', saved: 'savedBooks' };
+// The lists a reader keeps (hearted, saved for next time, and "notify me when a new group starts"). The key is the field name on the User document.
+const LISTS = { favorites: 'favoriteBooks', saved: 'savedBooks', notify: 'notifyBooks' };
 
 const formatBook = (book) => ({
   id: book._id,
@@ -18,10 +18,11 @@ const formatBook = (book) => ({
 
 // Just the ids: the browse page uses these to fill in the hearts and bookmarks
 const getIds = async (userId) => {
-  const user = await User.findById(userId).select('favoriteBooks savedBooks').lean();
+  const user = await User.findById(userId).select('favoriteBooks savedBooks notifyBooks').lean();
   return {
     favorites: (user?.favoriteBooks || []).map(String),
     saved: (user?.savedBooks || []).map(String),
+    notify: (user?.notifyBooks || []).map(String),
   };
 };
 

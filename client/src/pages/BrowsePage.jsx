@@ -20,12 +20,21 @@ export default function BrowsePage() {
   const [genres, setGenres] = useState([]);
   const [groups, setGroups] = useState([]);
   const [goals, setGoals] = useState({});
+  const [status, setStatus] = useState(null); // { soon: Set, started: Set } (null until loaded)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   // The list of genres for the filter menu (loaded once)
   useEffect(() => {
     catalogService.getGenres().then((data) => setGenres(data.genres)).catch(() => {});
+  }, []);
+
+  // Every group is shown. Some are greyed out: "coming soon" (the leader has not set the weekly plan yet) and
+  // "started" (week 3 or later, so joining is closed)
+  useEffect(() => {
+    goalService.getBrowsable()
+      .then((data) => setStatus({ soon: new Set(data.comingSoon), started: new Set(data.started) }))
+      .catch(() => {});
   }, []);
 
   // This week's reading goal for each group, shown on the book cards
@@ -55,14 +64,17 @@ export default function BrowsePage() {
   }, [filters]);
 
   // Group the results by genre: { Fantasy: [...], Mystery: [...] }
-  const byGenre = groups.reduce((acc, group) => {
+  const shown = groups;
+  const soon = status ? status.soon : new Set();
+  const started = status ? status.started : new Set();
+  const byGenre = shown.reduce((acc, group) => {
     (acc[group.book.genre] = acc[group.book.genre] || []).push(group);
     return acc;
   }, {});
 
   // The Top Recommended row only shows when nobody is searching or filtering
   const noFilters = !filters.q && !filters.genre && filters.day === '';
-  const topGroups = TOP_PICKS.map((title) => groups.find((g) => g.book.title === title)).filter(Boolean);
+  const topGroups = TOP_PICKS.map((title) => shown.find((g) => g.book.title === title && !soon.has(String(g.id)) && !started.has(String(g.id)))).filter(Boolean);
 
   return (
     <div>
@@ -75,17 +87,17 @@ export default function BrowsePage() {
       <ErrorMessage message={error} />
       {loading && <Loader text="Finding books..." />}
 
-      {!loading && !error && groups.length === 0 && (
+      {!loading && !error && shown.length === 0 && (
         <p className="empty">No groups match your search. Try a different word, genre, or day.</p>
       )}
 
       {!loading && !error && noFilters && topGroups.length >= 3 && (
-        <BookCarousel title="Top Recommended" groups={topGroups} zone={viewerZone(user)} goals={goals} />
+        <BookCarousel title="Top Recommended" groups={topGroups} zone={viewerZone(user)} goals={goals} soon={soon} started={started} />
       )}
 
       {!loading &&
         Object.entries(byGenre).map(([genre, list]) => (
-          <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} goals={goals} />
+          <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} goals={goals} soon={soon} started={started} />
         ))}
     </div>
   );

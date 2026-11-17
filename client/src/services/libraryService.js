@@ -8,3 +8,5 @@ export const addFavorite = (bookId) => api.put(`/library/favorites/${bookId}`, {
 export const removeFavorite = (bookId) => api.del(`/library/favorites/${bookId}`);
 export const addSaved = (bookId) => api.put(`/library/saved/${bookId}`, {});
 export const removeSaved = (bookId) => api.del(`/library/saved/${bookId}`);
+export const addNotify = (bookId) => api.put(`/library/notify/${bookId}`, {});
+export const removeNotify = (bookId) => api.del(`/library/notify/${bookId}`);

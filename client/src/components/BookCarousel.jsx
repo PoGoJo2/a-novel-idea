@@ -6,7 +6,7 @@ import GenreBorder, { ArrowVine } from './GenreBorder.jsx';
 
 // A row of books for one genre: one large book in the middle, smaller covers on each side,
 // and arrow buttons to move through the list.
-export default function BookCarousel({ title, groups, zone, goals = {} }) {
+export default function BookCarousel({ title, groups, zone, goals = {}, soon = new Set(), started = new Set() }) {
   const [index, setIndex] = useState(0);
   const offsets = [-2, -1, 0, 1, 2];
 
@@ -32,12 +32,12 @@ export default function BookCarousel({ title, groups, zone, goals = {} }) {
             if (offset === 0) {
               return (
                 <div key={offset} className="slot slot-0">
-                  <BookTile group={group} zone={zone} goal={goals[group.id]} />
+                  <BookTile group={group} zone={zone} goal={goals[group.id]} state={soon.has(String(group.id)) ? 'soon' : started.has(String(group.id)) ? 'started' : 'open'} />
                 </div>
               );
             }
             return (
-              <button key={offset} type="button" className={`slot slot-${size} side-cover`} onClick={() => go(offset)} aria-label={`Show ${group.book.title}`}>
+              <button key={offset} type="button" className={`slot slot-${size} side-cover${soon.has(String(group.id)) || started.has(String(group.id)) ? ' is-greyed' : ''}`} onClick={() => go(offset)} aria-label={`Show ${group.book.title}`}>
                 <BookCover book={group.book} />
               </button>
             );

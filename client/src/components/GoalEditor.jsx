@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as goalService from '../services/goalService.js';
+import { formatStart } from '../utils/startDate.js';
 import ErrorMessage from './ErrorMessage.jsx';
 
 // The leader types the chapters to read each week, for example "Chapters 1-5", then "Chapters 6-11".
@@ -10,6 +11,7 @@ export default function GoalEditor({ groupId, totalWeeks }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [start, setStart] = useState(null); // when the group starts
 
   useEffect(() => {
     let cancelled = false;
@@ -25,7 +27,16 @@ export default function GoalEditor({ groupId, totalWeeks }) {
     return () => { cancelled = true; };
   }, [groupId]);
 
+  useEffect(() => {
+    let cancelled = false;
+    goalService.getGroupInfo(groupId)
+      .then((data) => !cancelled && setStart((data.group || data).startDate || null))
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [groupId]);
+
   const weeks = Array.from({ length: totalWeeks }, (_, i) => i + 1);
+  const missing = weeks.filter((w) => !(saved[w] || '').trim());
   const changed = weeks.filter((w) => (draft[w] || '').trim() !== (saved[w] || ''));
 
   const save = async (e) => {
@@ -52,6 +63,12 @@ export default function GoalEditor({ groupId, totalWeeks }) {
     <section className="panel">
       <h2>Weekly reading goals</h2>
       <p className="muted small">Type what the group should read each week, such as "Chapters 1-5". Members see it in the weekly schedule, and this week's goal shows on the book card.</p>
+      {missing.length > 0 && (
+        <p className="goal-warning" role="status">
+          <strong>{missing.length} of {totalWeeks} weeks still need a goal.</strong> Readers see this book as "Coming soon" until every week is filled in.
+          {start && <> Finish before the group starts on <strong>{formatStart(start).text}</strong>.</>}
+        </p>
+      )}
       <ErrorMessage message={error} />
       {message && <p className="notice" role="status">{message}</p>}
       <form onSubmit={save}>
@@ -61,6 +78,7 @@ export default function GoalEditor({ groupId, totalWeeks }) {
               <label htmlFor={`goal-${week}`}>Week {week}</label>
               <input
                 id={`goal-${week}`}
+                className={(draft[week] || '').trim() ? '' : 'empty'}
                 type="text"
                 maxLength={60}
                 placeholder={week === 1 ? 'Chapters 1-5' : week === 2 ? 'Chapters 6-11' : 'Chapters or pages'}

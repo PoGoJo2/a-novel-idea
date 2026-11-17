@@ -6,6 +6,7 @@ import * as bookingService from '../services/bookingService.js';
 import * as tools from '../services/memberToolsService.js';
 import * as goalService from '../services/goalService.js';
 import { viewerZone } from '../utils/time.js';
+import { formatStart } from '../utils/startDate.js';
 import BookCover from '../components/BookCover.jsx';
 import TimeSlotPicker from '../components/TimeSlotPicker.jsx';
 import WeeklySchedule from '../components/WeeklySchedule.jsx';
@@ -23,6 +24,7 @@ export default function BookPage() {
   const [book, setBook] = useState(null);
   const [notes, setNotes] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [joinInfo, setJoinInfo] = useState({ open: true, reason: '' }); // is the group open for sign-ups?
   const [membership, setMembership] = useState(null); // this reader's active booking for this book
   const [chosen, setChosen] = useState('');
   const [busy, setBusy] = useState(false);
@@ -34,13 +36,16 @@ export default function BookPage() {
     const data = await catalogService.getBook(id);
     setBook(data.book);
     const groupId = data.book.groups[0]?.id;
+    if (groupId) setJoinInfo(await goalService.getJoinStatus(groupId).catch(() => ({ open: true, reason: '' })));
     // The weekly reading goals are public, so everyone can see them
     setGoals(groupId ? (await goalService.getGoals(groupId).catch(() => ({ goals: [] }))).goals : []);
     if (user && groupId) {
       const mine = await bookingService.getMyMemberships();
       const found = mine.memberships.find((m) => m.group.id === groupId) || null;
       setMembership(found);
-      setNotes(found ? (await tools.getNotes(groupId)).notes : []);
+      // The group's leader (and admins) can read the notes too, even without a booking
+      const leads = String(data.book.groups[0].leader?.id) === String(user.id) || user.role === 'admin';
+      setNotes(found || leads ? (await tools.getNotes(groupId)).notes : []);
     } else {
       setMembership(null);
       setNotes([]);
@@ -105,7 +110,7 @@ export default function BookPage() {
           <section className="panel" aria-labelledby="join-title">
             <h2 id="join-title">{membership ? "You're in this group" : 'Join this group'}</h2>
             <p className="muted">
-              Led by {group.leader.name} · {group.totalWeeks} weeks · {group.sessionMinutes}-minute video meetings
+              Led by {group.leader.name} · {formatStart(group.startDate).past ? 'Started' : 'Starts'} {formatStart(group.startDate).text} · {group.totalWeeks} weeks · {group.sessionMinutes}-minute video meetings
             </p>
 
             <TimeSlotPicker
@@ -120,6 +125,8 @@ export default function BookPage() {
             <ErrorMessage message={error} />
             {message && <p className="notice" role="status">{message}</p>}
 
+            {!membership && !joinInfo.open && <p className="notice" role="status">{joinInfo.reason}</p>}
+
             <div className="join-actions">
               {!user && (
                 <Link className="btn btn-primary" to="/login" state={{ from: location }}>
@@ -131,7 +138,7 @@ export default function BookPage() {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  disabled={busy || !chosen}
+                  disabled={busy || !chosen || !joinInfo.open}
                   onClick={() => act(() => bookingService.joinGroup(group.id, chosen), 'You joined the group. See you at the meeting!')}
                 >
                   {busy ? 'Joining…' : 'Join this group'}
@@ -169,7 +176,7 @@ export default function BookPage() {
             )}
           </section>
 
-          <WeeklySchedule totalWeeks={group.totalWeeks} currentWeek={group.currentWeek} isMember={Boolean(membership)} notes={notes} goals={goals} />
+          <WeeklySchedule totalWeeks={group.totalWeeks} currentWeek={group.currentWeek} isMember={Boolean(membership) || String(group.leader?.id) === String(user?.id) || user?.role === 'admin'} notes={notes} goals={goals} />
           <ReadingHelp isMember={Boolean(membership)} />
         </>
       )}

@@ -171,10 +171,10 @@
 .cover-title { font-size: 1.05em; }
 .cover-author { font-size: 0.75em; }
 .tile-title { font-size: clamp(0.8rem, 1.1vw, 1.1rem); }
-.carousel-track { gap: calc(var(--cw) * 0.07); min-height: calc(var(--cw) * 1.5 + 90px); }
+.carousel-track { gap: calc(var(--cw) * 0.07); min-height: calc(var(--cw) * 1.82); }
 .slot-1 { width: calc(var(--cw) * 0.5); display: block; }
 .slot-2 { width: calc(var(--cw) * 0.41); display: block; }
-.side-cover .cover-title { font-size: 0.7em; }
+.side-cover .cover-title { font-size: 0.72em; }
 .carousel-stage { padding: 0 clamp(34px, 4vw, 56px); }
 .carousel-arrow { width: clamp(30px, 3.2vw, 44px); height: clamp(30px, 3.2vw, 44px); }
 .library-grid { grid-template-columns: repeat(auto-fill, var(--cw)); gap: calc(var(--cw) * 0.1); justify-content: start; }
@@ -195,3 +195,27 @@
 .goal-rows { list-style: none; margin: 10px 0 14px; padding: 0; display: grid; gap: 8px; }
 .goal-row { display: grid; grid-template-columns: 80px 1fr; gap: 10px; align-items: center; }
 .goal-row input { width: 100%; }
+
+/* ---------- Greyed-out books: "coming soon" (no weekly plan yet) and "already started" (week 3 or later) ---------- */
+.tile.is-greyed { background: color-mix(in srgb, #8c8c8c 22%, var(--card)); }
+.tile.is-greyed > :not(.notify-btn) { filter: grayscale(1); opacity: 0.6; }
+.side-cover.is-greyed { filter: grayscale(1); opacity: 0.45; }
+.soon-note { margin: 0; font-size: clamp(0.7rem, 0.95vw, 0.9rem); }
+.btn.is-disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; text-align: center; }
+.notify-btn { text-align: center; }
+.notify-btn.on { background: var(--teal); }
+
+.start-date { margin: 0; font-size: clamp(0.72rem, 1vw, 0.92rem); color: var(--teal-text); }
+.goal-warning { margin: 8px 0; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #b57b1d; background: #f6d9a8; color: #4a2f06; font-size: 0.92rem; }
+.goal-row input.empty { border-color: #b57b1d; background: #fff3d6; }
+
+/* ---------- Top bar: small light/dark switch under the reader's name ---------- */
+.nav-user-block { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.nav .theme-toggle { border-width: 1px; border-radius: 6px; }
+.nav .theme-toggle button { min-height: 22px; padding: 0 9px; font-size: 11px; }
+
+/* ---------- Reader's name: larger, in a readable script ---------- */
+.nav-user {
+  font-family: 'Segoe Script', 'Lucida Handwriting', 'Apple Chancery', 'Snell Roundhand', 'Brush Script MT', Georgia, serif;
+  font-style: italic; font-weight: 600; font-size: 1.6rem; line-height: 1.1; letter-spacing: 0.02em;
+}

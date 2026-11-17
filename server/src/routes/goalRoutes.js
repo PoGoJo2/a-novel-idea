@@ -1,7 +1,7 @@
 const express = require('express');
 const { param, body } = require('express-validator');
 
-const { list, current, save } = require('../controllers/goalController');
+const { list, current, save, browsable, joinStatus } = require('../controllers/goalController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const validate = require('../middleware/validate');
 
@@ -14,6 +14,8 @@ const goalRules = [
 ];
 
 // Mounted at /api, so these are /api/goals/current and /api/groups/:id/goals
+router.get('/goals/browsable', browsable); // public: which groups are open and which are coming soon
+router.get('/groups/:id/join-status', idRule, validate, joinStatus); // public: is this group open for sign-ups?
 router.get('/goals/current', current); // public: this week's goal for every open group
 router.get('/groups/:id/goals', idRule, validate, list); // public: the whole plan for one group
 router.put('/groups/:id/goals', protect, authorize('leader', 'admin'), goalRules, validate, save); // leader only

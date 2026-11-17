@@ -6,6 +6,7 @@ const { joinGroup } = require('../controllers/bookingController');
 const { listNotes, saveNotes, listSlots, createSlot } = require('../controllers/memberToolsController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const validate = require('../middleware/validate');
+const joinGate = require('../middleware/joinGate');
 const { GENRES } = require('../models/Book');
 
 const router = express.Router();
@@ -33,7 +34,7 @@ const slotRules = [
 
 router.get('/', listRules, validate, listGroups);
 router.get('/:id', idRule, validate, getGroup);
-router.post('/:id/join', protect, joinRules, validate, joinGroup); // logged-in members only
+router.post('/:id/join', protect, joinRules, validate, joinGate, joinGroup); // logged-in members only
 
 // Weekly notes: members and the leader read; only the leader writes
 router.get('/:id/notes', protect, idRule, validate, listNotes);

@@ -24,14 +24,17 @@ export default function Navbar() {
         {user && (user.role === 'leader' || user.role === 'admin') && <NavLink to="/leader">Leader tools</NavLink>}
       </nav>
       <div className="nav-actions">
-        <ThemeToggle />
         {user ? (
           <>
-            <span className="nav-user">Hi, {user.name.split(' ')[0]}</span>
+            <div className="nav-user-block">
+              <span className="nav-user">Hi, {user.name.split(' ')[0]}</span>
+              <ThemeToggle />
+            </div>
             <button type="button" className="btn btn-nav" onClick={handleLogout}>Log out</button>
           </>
         ) : (
           <>
+            <ThemeToggle />
             <Link className="btn btn-nav" to="/login">Log in</Link>
             <Link className="btn btn-nav-solid" to="/register">Sign up</Link>
           </>

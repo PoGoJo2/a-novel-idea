@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema(
     // The reader's own lists: hearted books and books saved for next time (Book ids)
     favoriteBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
     savedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
+    // Books the reader wants to hear about when a new group starts (the group they wanted has already begun)
+    notifyBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
   },
   { timestamps: true }
 );

@@ -18,5 +18,7 @@ router.put('/favorites/:bookId', bookRule, validate, change('favorites', true));
 router.delete('/favorites/:bookId', bookRule, validate, change('favorites', false));
 router.put('/saved/:bookId', bookRule, validate, change('saved', true));
 router.delete('/saved/:bookId', bookRule, validate, change('saved', false));
+router.put('/notify/:bookId', bookRule, validate, change('notify', true));
+router.delete('/notify/:bookId', bookRule, validate, change('notify', false));
 
 module.exports = router;

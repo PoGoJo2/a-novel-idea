@@ -1,6 +1,6 @@
 // Fills in sample weekly reading goals (chapters) for every reading group that has none yet.
 // Run it once from the server folder with:  node src/seed/addChapterGoals.js
-// It only fills EMPTY goals, so goals your leaders have typed are never overwritten.
+// It only fills EMPTY goals (or old placeholders like "Week 1"), so goals your leaders have typed are never overwritten.
 require('dotenv').config();
 const mongoose = require('mongoose');
 
@@ -20,7 +20,7 @@ const run = async () => {
   let changed = 0;
   for (let week = 1; week <= 12; week += 1) {
     const goal = PLAN[(week - 1) % PLAN.length];
-    const result = await Meeting.updateMany({ weekNumber: week, $or: [{ chapters: '' }, { chapters: { $exists: false } }] }, { $set: { chapters: goal } });
+    const result = await Meeting.updateMany({ weekNumber: week, $or: [{ chapters: '' }, { chapters: { $exists: false } }, { chapters: { $regex: /^week\s*\d+$/i } }] }, { $set: { chapters: goal } });
     changed += result.modifiedCount;
   }
   console.log(`Done. Added goals to ${changed} weekly meetings.`);
