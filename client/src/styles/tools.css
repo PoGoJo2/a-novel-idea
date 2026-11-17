@@ -1,0 +1,18 @@
+/* ---------- Notes, one-on-ones, and leader tools ---------- */
+label.field > span { font-size: 0.9rem; font-weight: 600; }
+textarea { padding: 10px 12px; font: inherit; font-size: 16px; background: var(--card); color: var(--ink); border: 1.5px solid var(--border); border-radius: 8px; resize: vertical; width: 100%; }
+.inline-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 12px 0; }
+.inline-form .field { margin-bottom: 0; }
+.inline-form .btn { margin-bottom: 0; }
+.catch-up h3 { font-size: 1.05rem; margin: 14px 0 6px; }
+.note { border: 1px solid var(--divider); border-radius: 8px; padding: 8px 12px; margin-top: 6px; }
+.note summary { cursor: pointer; font-weight: 600; }
+.note p { margin: 8px 0 4px; white-space: pre-line; }
+.note-list { display: flex; flex-direction: column; }
+.slot-rows { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.slot-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid var(--divider); border-radius: 8px; }
+.slot-row.mine { border-color: var(--teal-text); border-width: 2px; }
+.slot-actions { display: flex; gap: 6px; }
+.week { flex-direction: column; align-items: stretch; gap: 4px; }
+.week-row { display: flex; align-items: center; gap: 10px; }
+.week-right { margin-left: auto; }
