@@ -12,6 +12,7 @@ import TimeSlotPicker from '../components/TimeSlotPicker.jsx';
 import WeeklySchedule from '../components/WeeklySchedule.jsx';
 import ReadingHelp from '../components/ReadingHelp.jsx';
 import SaveButtons from '../components/SaveButtons.jsx';
+import FeedbackForm from '../components/FeedbackForm.jsx';
 import Loader from '../components/Loader.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
@@ -178,6 +179,7 @@ export default function BookPage() {
 
           <WeeklySchedule totalWeeks={group.totalWeeks} currentWeek={group.currentWeek} isMember={Boolean(membership) || String(group.leader?.id) === String(user?.id) || user?.role === 'admin'} notes={notes} goals={goals} />
           <ReadingHelp isMember={Boolean(membership)} />
+          {user && <FeedbackForm bookId={group.book?.id} groupId={group.id} />}
         </>
       )}
     </div>

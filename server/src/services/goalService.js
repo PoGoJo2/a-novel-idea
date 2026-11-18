@@ -1,5 +1,6 @@
 const Meeting = require('../models/Meeting');
 const ReadingGroup = require('../models/ReadingGroup');
+const Book = require('../models/Book');
 const AppError = require('../utils/AppError');
 const { requireLeader } = require('./groupAccess');
 
@@ -70,6 +71,8 @@ const completePlans = async (groups) => {
 // Can a new member join this group right now? { open, reason }
 const joinStatus = async (group) => {
   if (group.status === 'finished') return { open: false, reason: 'This group has already finished.' };
+  const book = await Book.findById(group.book).select('retired');
+  if (book?.retired) return { open: false, reason: 'This book is no longer offered by the club.' };
   if (group.currentWeek >= JOIN_CLOSES_WEEK) {
     return { open: false, reason: `Joining closed when week ${JOIN_CLOSES_WEEK} began. Look for the next group for this book.` };
   }
@@ -85,7 +88,8 @@ const joinStatus = async (group) => {
 //   comingSoon - the leader has not finished the weekly plan yet (greyed out; the plan is due before the start date)
 //   started    - the group has reached week 3, so joining is closed (greyed out; "notify me when a new group starts")
 const browseStatus = async () => {
-  const groups = await ReadingGroup.find({ status: { $ne: 'finished' } }).select('totalWeeks currentWeek status');
+  const retiredIds = await Book.distinct('_id', { retired: true });
+  const groups = await ReadingGroup.find({ status: { $ne: 'finished' }, book: { $nin: retiredIds } }).select('totalWeeks currentWeek status');
   const complete = await completePlans(groups);
   const ids = (list) => list.map((g) => String(g._id));
   const started = groups.filter((g) => g.currentWeek >= JOIN_CLOSES_WEEK);
@@ -97,4 +101,4 @@ const browseStatus = async () => {
   };
 };
 
-module.exports = { listGoals, currentGoals, saveGoal, joinStatus, browseStatus, JOIN_CLOSES_WEEK };
+module.exports = { listGoals, currentGoals, saveGoal, joinStatus, browseStatus, completePlans, JOIN_CLOSES_WEEK };

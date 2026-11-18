@@ -14,6 +14,10 @@ const TOP_PICKS = [
   'Frankenstein', 'Fahrenheit 451', 'A Wizard of Earthsea', 'The Time Machine',
 ];
 
+// Genre rows always appear in this order, one under another
+const GENRE_ORDER = ['Mystery', 'Fantasy', 'Classics', 'Science Fiction', 'Horror', 'Romance', 'Thriller / Action', 'True Crime', 'Autobiography', 'Self Help / Personal Development'];
+const genreRank = (genre) => (GENRE_ORDER.includes(genre) ? GENRE_ORDER.indexOf(genre) : GENRE_ORDER.length);
+
 export default function BrowsePage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState({ q: '', genre: '', day: '' });
@@ -49,8 +53,14 @@ export default function BrowsePage() {
     setError('');
     const timer = setTimeout(async () => {
       try {
-        const data = await catalogService.getGroups({ ...filters, limit: 50 });
-        if (!cancelled) setGroups(data.groups);
+        // The server sends at most 50 groups at a time, so keep asking until every page has arrived
+        const first = await catalogService.getGroups({ ...filters, limit: 50, page: 1 });
+        let all = first.groups;
+        for (let page = 2; page <= (first.totalPages || 1); page += 1) {
+          const more = await catalogService.getGroups({ ...filters, limit: 50, page });
+          all = all.concat(more.groups);
+        }
+        if (!cancelled) setGroups(all);
       } catch (err) {
         if (!cancelled) setError(err.message);
       } finally {
@@ -96,7 +106,7 @@ export default function BrowsePage() {
       )}
 
       {!loading &&
-        Object.entries(byGenre).map(([genre, list]) => (
+        Object.entries(byGenre).sort(([a], [b]) => genreRank(a) - genreRank(b)).map(([genre, list]) => (
           <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} goals={goals} soon={soon} started={started} />
         ))}
     </div>

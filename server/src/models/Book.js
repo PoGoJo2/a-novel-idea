@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // One list of genres keeps filtering consistent across the whole app
-const GENRES = ['Mystery', 'Fantasy', 'Classics', 'Science Fiction', 'Romance', 'Historical', 'Non-fiction', 'Thriller'];
+const GENRES = ['Mystery', 'Fantasy', 'Classics', 'Science Fiction', 'Horror', 'Romance', 'Thriller / Action', 'True Crime', 'Autobiography', 'Self Help / Personal Development', 'Historical', 'Non-fiction'];
 
 const bookSchema = new mongoose.Schema(
   {
@@ -22,6 +22,8 @@ const bookSchema = new mongoose.Schema(
       ribbon: { type: String, default: '#D8B25A' },
     },
     pageCount: { type: Number, min: 1 },
+    // A retired book is hidden from Browse (an administrator can bring it back)
+    retired: { type: Boolean, default: false, index: true },
   },
   { timestamps: true }
 );

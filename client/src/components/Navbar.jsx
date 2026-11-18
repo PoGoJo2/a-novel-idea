@@ -22,8 +22,9 @@ export default function Navbar() {
         {user && <NavLink to="/dashboard">My Meetings</NavLink>}
         {user && <NavLink to="/library">My Library</NavLink>}
         {user && (user.role === 'leader' || user.role === 'admin') && <NavLink to="/leader">Leader tools</NavLink>}
+        {user && user.role === 'admin' && <NavLink to="/admin" className="nav-admin">[ Administrator ]</NavLink>}
       </nav>
-      <div className="nav-actions">
+      <div className={`nav-actions${user ? ' is-user' : ''}`}>
         {user ? (
           <>
             <div className="nav-user-block">

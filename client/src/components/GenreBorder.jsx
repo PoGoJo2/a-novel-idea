@@ -1,4 +1,5 @@
 import FloralArt, { Sprig } from './FloralDecor.jsx';
+import { MORE_ARTS, MORE_BANDS } from './GenreArtMore.jsx';
 
 // Ink-line artwork for the empty space at the left of each genre row, matching the genre:
 // a magnifying glass, spyglass and footprints for mystery; a wizard hat, crystal ball and wand for
@@ -251,7 +252,7 @@ function RecommendedArt() {
   );
 }
 
-const ARTS = { 'Top Recommended': RecommendedArt, Mystery: MysteryArt, Fantasy: FantasyArt, 'Science Fiction': SciFiArt, Classics: ClassicsArt };
+const ARTS = { 'Top Recommended': RecommendedArt, Mystery: MysteryArt, Fantasy: FantasyArt, 'Science Fiction': SciFiArt, Classics: ClassicsArt, ...MORE_ARTS };
 
 // The artwork is cut into bands (y-ranges of the 220 x 560 drawing). The bands are spread down the full
 // height of the row, so the border reaches the bottom of the section however tall the row is.
@@ -261,6 +262,7 @@ const BANDS = {
   'Science Fiction': [[10, 180], [184, 380], [396, 550]],
   Classics: [[8, 190], [240, 365], [440, 558]],
   'Top Recommended': [[8, 195], [232, 390], [398, 556]],
+  ...MORE_BANDS,
 };
 
 // Which side of the row a border sits on. The right side is the left side mirrored with CSS.

@@ -22,12 +22,10 @@ const readingGroupSchema = new mongoose.Schema(
     timeSlots: {
       type: [timeSlotSchema],
       validate: [
-        { validator: (slots) => slots.length === 2, message: 'A reading group must have exactly two meeting times' },
+        { validator: (slots) => slots.length >= 1 && slots.length <= 4, message: 'A reading group offers between one and four meeting times each week' },
         {
-          validator: (slots) =>
-            slots.length !== 2 ||
-            !(slots[0].dayOfWeek === slots[1].dayOfWeek && slots[0].startTime === slots[1].startTime),
-          message: 'The two meeting times must be different',
+          validator: (slots) => new Set(slots.map((s) => `${s.dayOfWeek}-${s.startTime}`)).size === slots.length,
+          message: 'The meeting times must all be different',
         },
       ],
     },

@@ -12,7 +12,10 @@ const meRoutes = require('./routes/meRoutes');
 const oneOnOneRoutes = require('./routes/oneOnOneRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const goalRoutes = require('./routes/goalRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const leaderRoutes = require('./routes/leaderRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -36,6 +39,9 @@ app.use('/api/one-on-ones', oneOnOneRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api', goalRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/leader', leaderRoutes);
 
 // These two must come last
 app.use(notFound);

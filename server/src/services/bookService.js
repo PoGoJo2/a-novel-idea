@@ -9,7 +9,7 @@ const listBooks = async (query) => {
   const page = Math.max(parseInt(query.page, 10) || 1, 1);
   const limit = Math.min(Math.max(parseInt(query.limit, 10) || 12, 1), 50);
 
-  const filter = {};
+  const filter = { retired: { $ne: true } };
   if (query.genre) filter.genre = query.genre;
   if (query.q && query.q.trim()) {
     const rx = new RegExp(escapeRegex(query.q.trim()), 'i');

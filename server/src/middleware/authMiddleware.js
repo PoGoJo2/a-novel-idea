@@ -16,6 +16,9 @@ const protect = asyncHandler(async (req, res, next) => {
   const user = await User.findById(decoded.id);
   if (!user) throw new AppError('This account no longer exists', 401);
 
+  // An administrator can remove a disruptive client; their login stops working at once
+  if (user.suspended) throw new AppError('This account has been suspended. Please contact the club administrator.', 403);
+
   req.user = user;
   next();
 });

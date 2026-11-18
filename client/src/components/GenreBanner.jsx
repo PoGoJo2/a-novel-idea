@@ -13,6 +13,12 @@ const THEMES = {
   Classics: { accent: '#7a1f2e', ribbon: '#d8b25a' },
   'Science Fiction': { accent: '#1f5f78', ribbon: '#e8c46a' },
   'Top Recommended': { accent: '#6b2236', ribbon: '#f0cd6e' },
+  Horror: { accent: '#4a1626', ribbon: '#c9b99a' },
+  Romance: { accent: '#8a3454', ribbon: '#f0b6c8' },
+  'Thriller / Action': { accent: '#7a2410', ribbon: '#f4b24a' },
+  'True Crime': { accent: '#3c4350', ribbon: '#e8c52a' },
+  Autobiography: { accent: '#7a5330', ribbon: '#e0c08a' },
+  'Self Help / Personal Development': { accent: '#1f7a6e', ribbon: '#f4d58a' },
 };
 const FALLBACK = { accent: '#2d5a52', ribbon: '#e8c46a' };
 
@@ -143,6 +149,92 @@ function recommended(c) {
   );
 }
 
+
+const skyline = (c, xs, color) =>
+  xs.map(([x, w, h]) => <rect key={`sk-${x}`} x={x} y={H - h} width={w} height={h} fill={color} />);
+
+function horror(c) {
+  const stone = (x) => <path key={`t-${x}`} d={`M${x} ${H} v-20 a8 8 0 0 1 16 0 v20z`} fill={c.dark} />;
+  const bat = (x, y) => <path key={`b-${x}`} d={`M${x} ${y} q8 -12 16 -2 q8 -10 16 2 q-16 -4 -16 6 q0 -10 -16 -6z`} fill={c.dark} />;
+  return (
+    <>
+      {stars(c, 14, 40)}
+      <g filter={c.shadow}><circle cx="130" cy="36" r="19" fill={c.pale} opacity="0.9" /></g>
+      <circle cx="137" cy="31" r="16" fill={c.deep} opacity="0.4" />
+      {[60, 210, 250, 560, 610, 660, 720].map(stone)}
+      <path d="M690 96 V50 M690 62 L674 46 M690 72 L708 54 M690 56 L700 40" stroke={c.dark} strokeWidth="4" fill="none" />
+      {bat(520, 24)}{bat(580, 40)}{bat(300, 18)}
+      <path d={ridge(c, 90, 6)} fill={c.dark} />
+    </>
+  );
+}
+
+function romance(c) {
+  const heart = (x, y, r, o) => (
+    <path key={`h-${x}`} d={`M${x} ${y + r} c-${r * 2} -${r * 1.4} -${r * 0.9} -${r * 2.4} 0 -${r * 1.1} c${r * 0.9} -${r * 1.3} ${r * 2} -${r * 0.3} 0 ${r * 2.5}z`} fill={c.ribbon} opacity={o} />
+  );
+  return (
+    <>
+      <g filter={c.shadow}><circle cx="120" cy="40" r="20" fill={c.pale} opacity="0.55" /></g>
+      {[[190, 56, 7, 0.8], [250, 30, 5, 0.7], [320, 70, 6, 0.6], [520, 28, 6, 0.8], [590, 62, 8, 0.8], [660, 34, 5, 0.7], [740, 60, 7, 0.8], [90, 72, 5, 0.7]].map(([x, y, r, o]) => heart(x, y, r, o))}
+      <path d="M0 96 Q100 66 200 82 T400 80 T600 78 T800 82 V96Z" fill={c.dark} opacity="0.6" />
+    </>
+  );
+}
+
+function thriller(c) {
+  return (
+    <>
+      <circle cx="700" cy="50" r="40" fill={c.ribbon} opacity="0.18" />
+      <g filter={c.shadow}><circle cx="700" cy="50" r="22" fill="#e0661f" /><circle cx="700" cy="50" r="13" fill={c.ribbon} /></g>
+      {skyline(c, [[40, 22, 44], [66, 16, 60], [86, 26, 36], [116, 18, 52], [150, 24, 30], [600, 20, 40], [624, 26, 56], [654, 16, 34], [744, 22, 46], [770, 26, 30]], c.dark)}
+      <path d="M180 8 L160 46 h14 l-8 30 L204 34 h-14 z" fill={c.ribbon} opacity="0.95" />
+      <path d="M140 74 l30 -6 M96 80 h24" stroke={c.ribbon} strokeWidth="1.4" opacity="0.7" />
+    </>
+  );
+}
+
+function trueCrime(c) {
+  return (
+    <>
+      {skyline(c, [[40, 22, 44], [66, 18, 60], [88, 26, 36], [118, 20, 52], [150, 24, 30], [610, 20, 42], [634, 26, 58], [664, 18, 34], [700, 22, 48], [728, 26, 30]], c.dark)}
+      {Array.from({ length: 22 }, (_, i) => <path key={`tape-${i}`} d={`M${i * 40 - 10} ${H - 8} l14 -14 h14 l-14 14z`} fill={c.ribbon} />)}
+      <rect x="0" y={H - 20} width={W} height="2" fill={c.ribbon} /><rect x="0" y={H - 4} width={W} height="2" fill={c.ribbon} />
+      <circle cx="560" cy="26" r="6" fill="#d83a3a" /><circle cx="560" cy="26" r="14" fill="#d83a3a" opacity="0.25" />
+      {stars(c, 8, 30)}
+    </>
+  );
+}
+
+function autobiography(c) {
+  const frame = (x, w, h) => (
+    <g key={`fr-${x}`} filter={c.shadow}>
+      <rect x={x} y="14" width={w} height={h} fill={c.deep} stroke={c.ribbon} strokeWidth="1.5" />
+      <circle cx={x + w / 2} cy={14 + h * 0.4} r={w * 0.17} fill={c.light} opacity="0.8" />
+      <path d={`M${x + w * 0.18} ${14 + h - 4} q${w * 0.32} -${h * 0.42} ${w * 0.64} 0z`} fill={c.light} opacity="0.8" />
+    </g>
+  );
+  return (
+    <>
+      {frame(110, 30, 42)}{frame(160, 24, 32)}{frame(640, 30, 42)}{frame(600, 24, 32)}
+      <path d="M0 96 Q200 60 400 82 T800 70 V96Z" fill={c.dark} opacity="0.75" />
+      <path d="M320 96 L380 70 M420 96 L480 72" stroke={c.ribbon} strokeWidth="1.2" opacity="0.5" />
+    </>
+  );
+}
+
+function selfHelp(c) {
+  return (
+    <>
+      <circle cx="690" cy="62" r="40" fill={c.ribbon} opacity="0.25" />
+      <g filter={c.shadow}><circle cx="690" cy="62" r="22" fill={c.ribbon} /></g>
+      <path d="M0 96 Q80 54 170 70 Q240 82 320 64 Q400 46 480 72 Q560 88 640 66 Q720 46 800 74 V96Z" fill={mix(c.accent, '#000000', 0.25)} />
+      <path d="M0 96 Q120 74 240 88 Q380 100 520 84 Q660 70 800 90 V96Z" fill={c.dark} />
+      <path d="M150 44 l6 -10 l6 10 M150 44 v18" stroke={c.pale} strokeWidth="1.4" fill="none" opacity="0.8" />
+    </>
+  );
+}
+
 function waves(c) {
   return (
     <>
@@ -168,7 +260,7 @@ export default function GenreBanner({ genre, count }) {
     rr: (min, max) => min + rng() * (max - min),
     shadow: `url(#shadow-${uid})`,
   };
-  const art = { Mystery: mystery, Fantasy: fantasy, Classics: classics, 'Science Fiction': scifi, 'Top Recommended': recommended }[genre] || waves;
+  const art = { Mystery: mystery, Fantasy: fantasy, Classics: classics, 'Science Fiction': scifi, 'Top Recommended': recommended, Horror: horror, Romance: romance, 'Thriller / Action': thriller, 'True Crime': trueCrime, Autobiography: autobiography, 'Self Help / Personal Development': selfHelp }[genre] || waves;
 
   return (
     <div className="genre-banner">
@@ -187,7 +279,7 @@ export default function GenreBanner({ genre, count }) {
         {art(c, uid)}
       </svg>
       <div className="banner-plate">
-        <h2 className="banner-title">{genre}</h2>
+        <h2 className={`banner-title${genre.length > 20 ? " is-long" : ""}`}>{genre}</h2>
         <span className="banner-count">{count} {count === 1 ? 'reading group' : 'reading groups'}</span>
       </div>
     </div>

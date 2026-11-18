@@ -104,6 +104,96 @@ function scifi(c, uid) {
   );
 }
 
+
+function horror(c) {
+  return (
+    <>
+      {stars(c, 14, 70)}
+      <g filter={c.shadow}><circle cx="120" cy="62" r="26" fill={c.pale} opacity="0.9" /></g>
+      <circle cx="130" cy="55" r="22" fill={c.deep} opacity="0.45" />
+      <path d="M30 80 q8 -14 16 -2 q8 -12 16 2 q-16 -4 -16 8 q0 -10 -16 -6z" fill={c.dark} />
+      <path d="M0 215 Q60 180 120 198 T200 190 V300 H0Z" fill={c.dark} />
+      {[26, 70, 120, 160].map((x, i) => (
+        <path key={`g-${x}`} d={`M${x} 250 v-${30 - i * 3} a10 10 0 0 1 20 0 v${30 - i * 3}z`} fill={c.deep} />
+      ))}
+      <path d="M176 230 V170 M176 190 L158 172 M176 204 L196 184" stroke={c.dark} strokeWidth="5" fill="none" />
+    </>
+  );
+}
+
+function romance(c) {
+  const heart = (x, y, r, o) => (
+    <path key={`h-${x}-${y}`} d={`M${x} ${y + r} c-${r * 2} -${r * 1.4} -${r * 0.9} -${r * 2.4} 0 -${r * 1.1} c${r * 0.9} -${r * 1.3} ${r * 2} -${r * 0.3} 0 ${r * 2.5}z`} fill={c.pale} opacity={o} />
+  );
+  return (
+    <>
+      <g filter={c.shadow}><circle cx="100" cy="100" r="34" fill={c.light} opacity="0.5" /></g>
+      {[[100, 92, 18, 0.9], [44, 50, 8, 0.7], [160, 46, 10, 0.7], [152, 140, 7, 0.6], [40, 146, 9, 0.6], [100, 34, 6, 0.6]].map(([x, y, r, o]) => heart(x, y, r, o))}
+      <path d="M0 200 Q50 176 100 194 T200 186 V300 H0Z" fill={c.dark} opacity="0.7" />
+    </>
+  );
+}
+
+function thriller(c) {
+  return (
+    <>
+      <circle cx="100" cy="92" r="54" fill={c.ribbon} opacity="0.18" />
+      <g filter={c.shadow}><circle cx="100" cy="92" r="26" fill={c.ribbon} opacity="0.9" /></g>
+      <path d="M112 20 L78 98 h26 l-14 62 L138 78 h-26 z" fill={c.pale} opacity="0.9" />
+      {[[0, 26, 70], [26, 20, 96], [46, 30, 60], [138, 24, 80], [162, 38, 104]].map(([x, w, h]) => (
+        <rect key={`b-${x}`} x={x} y={230 - h + 20} width={w} height={h + 60} fill={c.dark} />
+      ))}
+    </>
+  );
+}
+
+function trueCrime(c) {
+  return (
+    <>
+      {stars(c, 8, 60)}
+      {[[0, 28, 100], [28, 20, 130], [48, 34, 84], [134, 26, 120], [160, 40, 90]].map(([x, w, h]) => (
+        <rect key={`b-${x}`} x={x} y={250 - h} width={w} height={h + 60} fill={c.dark} />
+      ))}
+      <g transform="rotate(-8 100 120)">
+        <rect x="-10" y="106" width="220" height="22" fill={c.ribbon} />
+        {Array.from({ length: 9 }, (_, i) => <path key={`t-${i}`} d={`M${i * 28 - 8} 128 l14 -22 h12 l-14 22z`} fill="#1a1a1a" />)}
+      </g>
+      <circle cx="100" cy="46" r="7" fill="#d83a3a" /><circle cx="100" cy="46" r="18" fill="#d83a3a" opacity="0.25" />
+    </>
+  );
+}
+
+function autobiography(c) {
+  return (
+    <>
+      <g filter={c.shadow}>
+        <rect x="52" y="40" width="96" height="124" fill={c.deep} stroke={c.ribbon} strokeWidth="3" />
+        <rect x="62" y="50" width="76" height="104" fill="none" stroke={c.ribbon} strokeWidth="1" opacity="0.8" />
+        <circle cx="100" cy="92" r="18" fill={c.light} opacity="0.85" />
+        <path d="M68 154 q32 -46 64 0z" fill={c.light} opacity="0.85" />
+      </g>
+      <path d="M0 230 Q60 196 120 214 T200 206 V300 H0Z" fill={c.dark} opacity="0.8" />
+      <path d="M70 300 L96 214 M130 300 L110 214" stroke={c.ribbon} strokeWidth="1.5" opacity="0.5" />
+    </>
+  );
+}
+
+function selfHelp(c) {
+  return (
+    <>
+      <circle cx="100" cy="150" r="62" fill={c.ribbon} opacity="0.22" />
+      <g filter={c.shadow}><circle cx="100" cy="150" r="34" fill={c.ribbon} /></g>
+      {Array.from({ length: 12 }, (_, i) => {
+        const a = (i * 30) * (Math.PI / 180);
+        return <path key={`r-${i}`} d={`M${100 + 44 * Math.cos(a)} ${150 + 44 * Math.sin(a)} L${100 + 58 * Math.cos(a)} ${150 + 58 * Math.sin(a)}`} stroke={c.ribbon} strokeWidth="3" opacity="0.7" />;
+      })}
+      <path d="M0 210 Q50 160 110 190 Q160 210 200 176 V300 H0Z" fill={c.deep} />
+      <path d="M0 250 Q80 214 200 244 V300 H0Z" fill={c.dark} />
+      <path d="M142 186 v-18 M142 168 l12 4 l-12 4" stroke={c.pale} strokeWidth="2" fill="none" />
+    </>
+  );
+}
+
 function abstractShapes(c) {
   const tints = [c.pale, c.light, c.ribbon, c.pale];
   return (
@@ -135,7 +225,7 @@ export default function CoverArt({ book, uid }) {
     shadow: `url(#shadow-${uid})`,
   };
 
-  const art = { Mystery: mystery, Fantasy: fantasy, Classics: classics, 'Science Fiction': scifi }[book.genre] || abstractShapes;
+  const art = { Mystery: mystery, Fantasy: fantasy, Classics: classics, 'Science Fiction': scifi, Horror: horror, Romance: romance, 'Thriller / Action': thriller, 'True Crime': trueCrime, Autobiography: autobiography, 'Self Help / Personal Development': selfHelp }[book.genre] || abstractShapes;
 
   return (
     <>

@@ -62,6 +62,10 @@ const listGroups = async (query) => {
 
   const groupFilter = { status: { $ne: 'finished' } };
 
+  // Retired books are hidden from Browse
+  const retiredIds = await Book.distinct('_id', { retired: true });
+  if (retiredIds.length) groupFilter.book = { $nin: retiredIds };
+
   // Genre and search live on the book, so find the matching books first
   const bookFilter = {};
   if (query.genre) bookFilter.genre = query.genre;
@@ -70,7 +74,8 @@ const listGroups = async (query) => {
     bookFilter.$or = [{ title: rx }, { author: rx }];
   }
   if (Object.keys(bookFilter).length) {
-    groupFilter.book = { $in: await Book.distinct('_id', bookFilter) };
+    const found = await Book.distinct('_id', bookFilter);
+    groupFilter.book = { $in: found.filter((id) => !retiredIds.some((r) => String(r) === String(id))) };
   }
   if (query.book) groupFilter.book = query.book;
 

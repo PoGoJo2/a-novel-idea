@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ['member', 'leader', 'admin'], default: 'member' },
     // Meetings are stored in UTC and shown in each user's own time zone
     timezone: { type: String, default: 'America/New_York' },
+    // An administrator can suspend a disruptive client: they can no longer use the site
+    suspended: { type: Boolean, default: false },
+    suspendedReason: { type: String, default: '', maxlength: 300 },
     themePreference: { type: String, enum: ['light', 'dark'], default: 'light' },
     // The reader's own lists: hearted books and books saved for next time (Book ids)
     favoriteBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
