@@ -17,6 +17,7 @@ export const retireBook = (id, retired) => api.put(`/admin/books/${id}/retire`, 
 export const getUsers = (params = '') => api.get(`/admin/users${params}`);
 export const setRole = (id, role) => api.put(`/admin/users/${id}/role`, { role });
 export const suspendUser = (id, suspended, reason = '') => api.put(`/admin/users/${id}/suspend`, { suspended, reason });
+export const resetPassword = (id, password) => api.put(`/admin/users/${id}/password`, { password });
 
 // Complaints and reviews
 export const getFeedback = (params = '') => api.get(`/admin/feedback${params}`);

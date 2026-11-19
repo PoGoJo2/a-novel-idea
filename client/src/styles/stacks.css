@@ -568,3 +568,22 @@
 .finding-leader { display: block; text-align: center; margin-top: -2px; font: italic 600 0.95rem 'Snell Roundhand', 'Apple Chancery', 'Segoe Script', Georgia, serif; color: var(--teal-text); }
 .lt-problems { border: 1.5px solid #a33; background: rgba(176, 52, 40, 0.1); border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; color: #7a1f1f; }
 .lt-problems ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* ---------- Passwords: My account link, forgot link, account page ---------- */
+.nav-actions.is-user { grid-template-areas: 'name out' 'toggle acct'; }
+.nav-account { grid-area: acct; justify-self: center; font-size: 0.75rem; color: inherit; opacity: 0.9; text-decoration: underline; text-underline-offset: 2px; }
+.nav-account:hover, .nav-account.active { opacity: 1; }
+.forgot-link { align-self: flex-end; font-size: 0.85rem; margin-top: 2px; }
+.account-page { max-width: 640px; }
+.account-page h2 { margin-top: 0; }
+.account-details dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; }
+.account-details dt { font-weight: 600; }
+.account-details dd { margin: 0; overflow-wrap: anywhere; }
+.account-form .btn-primary { width: auto; }
+.show-row { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font-size: 0.9rem; cursor: pointer; }
+.tag.tag-reset { color: #8a2c1d; font-weight: 700; text-transform: none; }
+.tag.tag-temp { text-transform: none; }
+/* My account: family-reading border (same U-shaped desk border as Leader tools and Administrator) */
+.account-page { position: relative; }
+.account-page > :not(.desk-sides) { position: relative; z-index: 1; }
+.account-page { max-width: 520px; }

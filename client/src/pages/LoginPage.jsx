@@ -20,8 +20,9 @@ export default function LoginPage() {
     setError({ message: '', details: [] });
     setSubmitting(true);
     try {
-      await login(form);
-      navigate(location.state?.from?.pathname || '/dashboard', { replace: true });
+      const signedIn = await login(form);
+      if (signedIn.mustChangePassword) navigate('/account', { replace: true });
+      else navigate(location.state?.from?.pathname || '/dashboard', { replace: true });
     } catch (err) {
       setError({ message: err.message, details: err.errors || [] });
     } finally {
@@ -49,6 +50,7 @@ export default function LoginPage() {
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
+            <Link to="/forgot-password" className="forgot-link">Forgot your password?</Link>
           </div>
           <button className="btn btn-primary" type="submit" disabled={submitting}>
             {submitting ? 'Logging in...' : 'Log in'}

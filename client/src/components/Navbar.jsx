@@ -33,6 +33,7 @@ export default function Navbar() {
               <ThemeToggle />
             </div>
             <button type="button" className="btn btn-nav" onClick={handleLogout}>Log out</button>
+            <NavLink to="/account" className="nav-account">My account</NavLink>
           </>
         ) : (
           <>

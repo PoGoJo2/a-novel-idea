@@ -252,8 +252,13 @@ const listUsers = async (query) => {
     filter.$or = [{ name: rx }, { email: rx }];
   }
   if (ROLES.includes(query.role)) filter.role = query.role;
-  const users = await User.find(filter).sort({ name: 1 }).limit(200).select('name email role suspended suspendedReason createdAt');
-  return users.map((u) => ({ id: u._id, name: u.name, email: u.email, role: u.role, suspended: Boolean(u.suspended), suspendedReason: u.suspendedReason || '', joined: u.createdAt }));
+  const users = await User.find(filter).sort({ name: 1 }).limit(200).select('name email role suspended suspendedReason createdAt passwordResetRequestedAt mustChangePassword');
+  const list = users.map((u) => ({
+    id: u._id, name: u.name, email: u.email, role: u.role, suspended: Boolean(u.suspended), suspendedReason: u.suspendedReason || '', joined: u.createdAt,
+    resetRequestedAt: u.passwordResetRequestedAt || null, mustChangePassword: Boolean(u.mustChangePassword),
+  }));
+  // People who asked for a password reset come first, so the administrator sees them straight away
+  return [...list.filter((u) => u.resetRequestedAt), ...list.filter((u) => !u.resetRequestedAt)];
 };
 
 const ledGroupCount = (userId) => ReadingGroup.countDocuments({ leader: userId, status: { $ne: 'finished' } });
@@ -285,6 +290,20 @@ const setUserSuspended = async (actor, id, suspended, reason = '') => {
   await user.save({ validateBeforeSave: false });
   if (suspended) await Membership.updateMany({ user: user._id, status: 'active' }, { $set: { status: 'cancelled', cancelledAt: new Date() } });
   return { id: user._id, suspended: user.suspended };
+};
+
+// An administrator gives someone a temporary password (for example, they forgot theirs).
+// The person must choose their own password the next time they log in, and older logins stop working.
+const resetUserPassword = async (actor, id, password) => {
+  if (String(actor._id) === String(id)) throw new AppError('To change your own password, use My account', 400);
+  if (typeof password !== 'string' || password.length < 8) throw new AppError('The temporary password must be at least 8 characters', 400);
+  const user = await User.findById(id);
+  if (!user) throw new AppError('That person was not found', 404);
+  user.password = password;
+  user.mustChangePassword = true;
+  user.passwordResetRequestedAt = null;
+  await user.save({ validateBeforeSave: false });
+  return { id: user._id, mustChangePassword: true };
 };
 
 // ---------- FEEDBACK ----------
@@ -413,6 +432,7 @@ const listLeaders = async () => {
 };
 
 module.exports = {
+  resetUserPassword,
   getStats, listGroups, updateGroup, createGroup, listBooks, createBook, setBookRetired,
   listUsers, setUserRole, setUserSuspended, listFeedback, setFeedbackStatus,
   listLeaderRequests, decideLeaderRequest, listLeaders, syncMeetings,

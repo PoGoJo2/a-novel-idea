@@ -14,6 +14,7 @@ module.exports = {
   users: asyncHandler(async (req, res) => ok(res, { users: await admin.listUsers(req.query) })),
   setRole: asyncHandler(async (req, res) => ok(res, await admin.setUserRole(req.user, req.params.id, req.body?.role))),
   suspend: asyncHandler(async (req, res) => ok(res, await admin.setUserSuspended(req.user, req.params.id, req.body?.suspended, req.body?.reason))),
+  resetPassword: asyncHandler(async (req, res) => ok(res, await admin.resetUserPassword(req.user, req.params.id, req.body?.password))),
   feedback: asyncHandler(async (req, res) => ok(res, { feedback: await admin.listFeedback(req.query) })),
   leaders: asyncHandler(async (req, res) => ok(res, { leaders: await admin.listLeaders() })),
   leaderRequests: asyncHandler(async (req, res) => ok(res, { requests: await admin.listLeaderRequests() })),

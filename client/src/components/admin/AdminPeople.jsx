@@ -4,7 +4,14 @@ import * as admin from '../../services/adminService.js';
 import Loader from '../Loader.jsx';
 import ErrorMessage from '../ErrorMessage.jsx';
 
-// People: make someone a leader, or remove a disruptive client.
+// A readable temporary password, for example "Book-4821-Tea"
+const WORDS = ['Book', 'Page', 'Tea', 'Quill', 'Shelf', 'Novel', 'Story', 'Ink', 'Lamp', 'Chapter'];
+const tempPassword = () => {
+  const pick = () => WORDS[Math.floor(Math.random() * WORDS.length)];
+  return `${pick()}-${1000 + Math.floor(Math.random() * 9000)}-${pick()}`;
+};
+
+// People: make someone a leader, reset a forgotten password, or remove a disruptive client.
 export default function AdminPeople() {
   const { user: me } = useAuth();
   const [users, setUsers] = useState(null);
@@ -26,9 +33,9 @@ export default function AdminPeople() {
   return (
     <section className="panel">
       <h2>People</h2>
-      <p className="muted small">Set someone's role to Leader before assigning them to a group. Removing a client signs them out for good, cancels their seats and blocks their login. You can restore them later.</p>
+      <p className="muted small">Set someone's role to Leader before assigning them to a group. People who asked for a new password are listed first: use Reset password to give them a temporary one. Removing a client signs them out for good, cancels their seats and blocks their login. You can restore them later.</p>
       <ErrorMessage message={error} />
-      {message && <p className="notice" role="status">{message}</p>}
+      {message && <p className="notice admin-message" role="status">{message}</p>}
       <form className="inline-form" onSubmit={(e) => { e.preventDefault(); load(q); }}>
         <label className="field"><span>Search by name or email</span><input value={q} onChange={(e) => setQ(e.target.value)} /></label>
         <button type="submit" className="btn btn-small">Search</button>
@@ -42,6 +49,8 @@ export default function AdminPeople() {
               <div className="admin-item-head">
                 <div>
                   <strong>{u.name}</strong>{u.suspended && <span className="tag">removed</span>}
+                  {u.resetRequestedAt && <span className="tag tag-reset">asked for a new password</span>}
+                  {!u.resetRequestedAt && u.mustChangePassword && <span className="tag tag-temp">temporary password</span>}
                   <div className="muted small">{u.email}</div>
                 </div>
                 <div className="admin-actions">
@@ -50,6 +59,23 @@ export default function AdminPeople() {
                       <option value="member">Member</option><option value="leader">Leader</option><option value="admin">Administrator</option>
                     </select>
                   </label>
+                  {!self && (
+                    <button
+                      type="button"
+                      className={`btn btn-small${u.resetRequestedAt ? ' btn-primary' : ''}`}
+                      disabled={busy}
+                      onClick={() => {
+                        const temp = window.prompt(
+                          `Give ${u.name} a temporary password (at least 8 characters). They will choose their own the next time they log in.`,
+                          tempPassword()
+                        );
+                        if (temp === null) return undefined;
+                        return run(() => admin.resetPassword(u.id, temp.trim()), `${u.name}'s temporary password is: ${temp.trim()}\nGive it to them privately. They will be asked to choose their own when they log in.`);
+                      }}
+                    >
+                      Reset password
+                    </button>
+                  )}
                   {!self && u.role !== 'admin' && (
                     <button
                       type="button"

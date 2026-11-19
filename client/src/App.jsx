@@ -16,13 +16,15 @@ import LibraryPage from './pages/LibraryPage.jsx';
 import LeadersPage from './pages/LeadersPage.jsx';
 import LeaderDetailPage from './pages/LeaderDetailPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
+import AccountPage from './pages/AccountPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 export default function App() {
   const path = useLocation().pathname;
   const onLibrary = path === '/library';
   const onMeetings = path === '/dashboard';
-  const onDesk = path === '/leader' || path === '/admin';
+  const onDesk = path === '/leader' || path === '/admin' || path === '/account';
   return (
     <>
       <PaperBackground />
@@ -52,6 +54,15 @@ export default function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <AccountPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={

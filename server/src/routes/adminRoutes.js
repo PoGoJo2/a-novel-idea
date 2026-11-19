@@ -21,6 +21,7 @@ router.put('/books/:id/retire', c.retireBook);
 router.get('/users', c.users);
 router.put('/users/:id/role', c.setRole);
 router.put('/users/:id/suspend', c.suspend);
+router.put('/users/:id/password', c.resetPassword);
 
 router.get('/leaders', c.leaders);
 router.get('/leader-requests', c.leaderRequests);

@@ -11,6 +11,8 @@ export default function ProtectedRoute({ children, roles }) {
 
   if (loading) return <Loader />;
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  // Someone given a temporary password must choose their own before using the rest of the site
+  if (user.mustChangePassword && location.pathname !== '/account') return <Navigate to="/account" replace />;
   if (roles && !roles.includes(user.role)) return <p className="empty">This page is for {roles.join(' or ')}s only.</p>;
   return children;
 }

@@ -32,6 +32,14 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
+  // Older logins stop working after a password change, so keep the fresh one the server sends back
+  const changePassword = async (passwords) => {
+    const data = await authService.changePassword(passwords);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  };
+
   const logout = async () => {
     try {
       await authService.logout();
@@ -43,7 +51,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, changePassword }}>{children}</AuthContext.Provider>
   );
 }
 

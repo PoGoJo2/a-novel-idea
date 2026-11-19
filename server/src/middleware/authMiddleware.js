@@ -19,6 +19,11 @@ const protect = asyncHandler(async (req, res, next) => {
   // An administrator can remove a disruptive client; their login stops working at once
   if (user.suspended) throw new AppError('This account has been suspended. Please contact the club administrator.', 403);
 
+  // A login from before the last password change no longer works
+  if (user.passwordChangedAt && decoded.iat * 1000 < user.passwordChangedAt.getTime()) {
+    throw new AppError('Your password was changed. Please log in again.', 401);
+  }
+
   req.user = user;
   next();
 });

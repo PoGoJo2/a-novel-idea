@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
     suspended: { type: Boolean, default: false },
     suspendedReason: { type: String, default: '', maxlength: 300 },
     themePreference: { type: String, enum: ['light', 'dark'], default: 'light' },
+    // Passwords: when it last changed (older logins stop working), whether an administrator set a
+    // temporary one that must be replaced, and when the person asked for a reset from the login page
+    passwordChangedAt: { type: Date, default: null },
+    mustChangePassword: { type: Boolean, default: false },
+    passwordResetRequestedAt: { type: Date, default: null },
     // The reader's own lists: hearted books and books saved for next time (Book ids)
     favoriteBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
     savedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
@@ -42,6 +47,8 @@ const userSchema = new mongoose.Schema(
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
+  // A changed password signs out every older login (one second earlier so the new token still works)
+  if (!this.isNew) this.passwordChangedAt = new Date(Date.now() - 1000);
 });
 
 userSchema.methods.matchPassword = function (enteredPassword) {
