@@ -1,14 +1,19 @@
-import { SCENES } from './libraryArt.js';
+// The floor at the bottom of the My Library page, with four readers.
+// The pictures live in client/public/characters (made with an AI image tool).
+const READERS = [
+  { name: 'girl', file: 'reader-girl.png' },
+  { name: 'boy', file: 'reader-boy.png' },
+  { name: 'grandma', file: 'reader-grandma.png' },
+  { name: 'man', file: 'reader-man.png' },
+];
 
-// The floor at the bottom of the My Library page, with four people reading.
 export default function ReadingRoom() {
   return (
     <div className="reading-room" aria-hidden="true">
       <div className="reading-floor" />
-      <div className="person p-girl" dangerouslySetInnerHTML={{ __html: SCENES.girl }} />
-      <div className="person p-boy" dangerouslySetInnerHTML={{ __html: SCENES.boy }} />
-      <div className="person p-elder" dangerouslySetInnerHTML={{ __html: SCENES.elder }} />
-      <div className="person p-stack" dangerouslySetInnerHTML={{ __html: SCENES.stack }} />
+      {READERS.map((r) => (
+        <img key={r.name} className={`person p-${r.name}`} src={`/characters/${r.file}`} alt="" loading="lazy" />
+      ))}
     </div>
   );
 }

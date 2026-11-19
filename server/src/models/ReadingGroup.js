@@ -17,7 +17,8 @@ const timeSlotSchema = new mongoose.Schema({
 const readingGroupSchema = new mongoose.Schema(
   {
     book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true, index: true },
-    leader: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    // null while the club is still finding a leader for this class (it shows "Coming soon · Finding a leader")
+    leader: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     sessionMinutes: { type: Number, default: 60, min: 15, max: 240 }, // the "service duration"
     timeSlots: {
       type: [timeSlotSchema],

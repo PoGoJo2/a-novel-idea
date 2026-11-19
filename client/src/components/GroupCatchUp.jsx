@@ -60,7 +60,7 @@ export default function GroupCatchUp({ membership, zone }) {
         </div>
       )}
 
-      <h3>One-on-ones with {group.leader.name}</h3>
+      <h3>One-on-ones{group.leader ? ` with ${group.leader.name}` : ''}</h3>
       {!oneOnOnes ? (
         <p className="muted">Loading…</p>
       ) : (

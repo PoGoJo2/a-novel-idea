@@ -21,6 +21,7 @@ export default function Navbar() {
         <NavLink to="/" end>Browse</NavLink>
         {user && <NavLink to="/dashboard">My Meetings</NavLink>}
         {user && <NavLink to="/library">My Library</NavLink>}
+        {user && <NavLink to="/leaders">Meet the Leaders</NavLink>}
         {user && (user.role === 'leader' || user.role === 'admin') && <NavLink to="/leader">Leader tools</NavLink>}
         {user && user.role === 'admin' && <NavLink to="/admin" className="nav-admin">[ Administrator ]</NavLink>}
       </nav>

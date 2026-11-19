@@ -24,10 +24,11 @@ function NotifyButton({ bookId }) {
 }
 
 // The large, centered tile in a carousel: cover, title, both meeting times, and a link to join.
-// state: "open" (can join), "soon" (the leader has not set the weekly plan yet), "started" (already past week 3).
+// state: "open" (can join), "soon" (the leader has not set the weekly plan yet), "started" (already past week 3),
+//        "leader" (no leader yet: "Coming soon" with "Finding a leader" underneath, not greyed out).
 export default function BookTile({ group, zone, goal, state = 'open' }) {
   const { book, timeSlots } = group;
-  const greyed = state !== 'open';
+  const greyed = state === 'soon' || state === 'started';
   const start = formatStart(group.startDate);
   return (
     <article className={`tile bx${greyed ? ' is-greyed' : ''}`} style={bookStyle(book)}>
@@ -63,6 +64,12 @@ export default function BookTile({ group, zone, goal, state = 'open' }) {
       {state === 'open' && <Link className="btn btn-accent" to={`/books/${book.id}`}>View &amp; join</Link>}
       {state === 'soon' && <span className="btn btn-accent is-disabled" aria-disabled="true">Coming soon</span>}
       {state === 'started' && <NotifyButton bookId={book.id} />}
+      {state === 'leader' && (
+        <>
+          <span className="btn btn-accent is-disabled leader-soon" aria-disabled="true">Coming soon</span>
+          <span className="finding-leader">Finding a leader…</span>
+        </>
+      )}
     </article>
   );
 }

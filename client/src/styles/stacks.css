@@ -299,7 +299,7 @@
 .admin-tools.right { right: 0; }
 .admin-tool { width: 100%; height: auto; max-height: 22vh; }
 .gear-cluster { position: absolute; top: -6px; right: 0; width: clamp(70px, 9vw, 130px); color: var(--vine, #2a2418); opacity: 0.8; pointer-events: none; }
-.admin-page > :not(.admin-tools):not(.gear-cluster) { position: relative; z-index: 1; }
+.admin-page > :not(.admin-tools):not(.gear-cluster):not(.desk-sides) { position: relative; z-index: 1; }
 @media (max-width: 1000px) { .admin-tools { display: none; } }
 
 /* ---------- Administrator edit window: compact rows ---------- */
@@ -329,7 +329,7 @@
 .leader-decor.left { left: 0; }
 .leader-decor.right { right: 0; }
 .leader-art { width: 100%; height: auto; max-height: 17vh; }
-.leader-page > :not(.leader-decor) { position: relative; z-index: 1; }
+.leader-page > :not(.leader-decor):not(.desk-sides) { position: relative; z-index: 1; }
 @media (max-width: 1000px) { .leader-decor { display: none; } }
 
 /* Leader tiles that are not clickable, request lists, and the record */
@@ -349,3 +349,222 @@
 .class-tools .panel { margin-top: 12px; }
 .finish-panel { border: 1.5px solid #1d5a37; }
 .admin-tile.static .admin-tile-foot { flex-wrap: wrap; gap: 6px; }
+
+/* ---------- 3D-style readers on the My Library floor (pictures in public/characters) ---------- */
+.reading-room img.person { position: absolute; bottom: 10px; display: block; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.25)); }
+.reading-room .p-girl { left: 3%; width: auto; height: clamp(110px, 15vw, 230px); }
+.reading-room .p-boy { left: 24%; width: auto; height: clamp(84px, 11vw, 168px); }
+.reading-room .p-grandma { left: 45%; width: auto; height: clamp(80px, 10.5vw, 160px); }
+.reading-room .p-man { left: 64%; width: auto; height: clamp(66px, 8.5vw, 130px); bottom: 6px; }
+.reading-room { height: clamp(120px, 16vw, 240px); }
+
+/* The AI helper mascot picture */
+.ai-mascot-img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: bottom; transform-origin: 50% 100%; filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25)); }
+:root[data-theme='dark'] .ai-mascot-img { filter: drop-shadow(0 0 2px #f1e6d0) drop-shadow(0 0 7px rgba(241, 230, 208, 0.45)); }
+.ai-mascot-img.m-bob { animation: m-rock 2.6s ease-in-out infinite; }
+@keyframes m-rock { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-4px) rotate(-3deg); } }
+@media (prefers-reduced-motion: reduce) { .ai-mascot-img.m-bob { animation: none; } }
+.ai-mascot { width: 118px; height: 118px; }
+@media (max-width: 520px) { .ai-mascot { width: 76px; height: 76px; } }
+
+/* ---------- My Library: full-length bookcases down both sides ---------- */
+:root { --case-w: clamp(46px, max(calc((100vw - 1100px) / 2 - 10px), 7vw), 190px); }
+.library-shelves { position: absolute !important; inset: auto; left: 0; right: 0; z-index: 0; pointer-events: none; }
+.library-shelves .book-case {
+  position: absolute; top: 0; bottom: 0; width: var(--case-w); height: 100%;
+  object-fit: fill;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.3));
+}
+.library-shelves .case-left { left: 4px; }
+.library-shelves .case-right { right: 4px; }
+.page.has-sides { padding-left: calc(var(--case-w) + 16px) !important; padding-right: calc(var(--case-w) + 16px) !important; }
+
+/* Readers spread evenly across the whole floor, between the bookcases */
+.reading-room {
+  display: flex; justify-content: space-evenly; align-items: flex-end;
+  padding: 0 330px 8px 2%; box-sizing: border-box; z-index: 1; justify-content: space-between;
+}
+.reading-room img.person { position: relative; left: auto !important; bottom: auto; z-index: 1; }
+@media (max-width: 700px) { .reading-room { padding: 0 90px 6px 2%; } }
+
+/* ---------- My Meetings: full-length book towers down both sides (replace the drawn stacks) ---------- */
+.book-stacks { position: absolute !important; inset: auto; left: 0; right: 0; z-index: 0; pointer-events: none; }
+.book-stacks .book-tower {
+  position: absolute; top: 0; bottom: 0; height: 100%; width: var(--case-w);
+  object-fit: fill; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.3));
+}
+.book-stacks .tower-left { left: 4px; }
+.book-stacks .tower-right { right: 4px; }
+
+/* ---------- Administrator → Leaders tab ---------- */
+.leader-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
+.leader-tile { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1.5px solid var(--line, rgba(60, 40, 20, 0.35)); border-radius: 12px; background: rgba(255, 255, 255, 0.3); }
+[data-theme='dark'] .leader-tile { background: rgba(255, 255, 255, 0.05); }
+.lt-who { display: flex; gap: 10px; align-items: center; }
+.lt-avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--teal, #1f6f6a); color: #fff; font: italic 700 20px Georgia, serif; }
+.lt-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.lt-stat { border: 1px solid var(--line, rgba(60, 40, 20, 0.35)); border-radius: 8px; padding: 4px 2px; text-align: center; font-size: 0.68rem; }
+.lt-stat strong { display: block; font: italic 700 1.2rem Georgia, serif; color: var(--teal-text, #1f5f5a); }
+.lt-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.lt-day { border: 1px solid var(--line, rgba(60, 40, 20, 0.35)); border-radius: 6px; text-align: center; padding: 3px 0; font-size: 0.66rem; }
+.lt-day strong { display: block; font-size: 0.8rem; }
+.lt-day.some { background: rgba(31, 122, 110, 0.18); }
+.lt-day.full { background: rgba(176, 52, 40, 0.22); border-color: #a33; }
+.lt-classes { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lt-classes li { display: flex; gap: 10px; align-items: center; font-size: 0.85rem; }
+.lt-classes .cover { width: 30px; flex: none; aspect-ratio: 2 / 3; }
+.lt-classes .cover .cover-title, .lt-classes .cover .cover-author { display: none; }
+.lt-classes li > span { display: flex; flex-direction: column; min-width: 0; }
+.lt-key { margin-top: 12px; }
+.lt-who > div { min-width: 0; } .lt-who .muted { overflow-wrap: anywhere; }
+
+/* ---------- Painted cover pictures (client/public/covers) with the title printed on top ---------- */
+.cover-art.has-photo { overflow: hidden; }
+.cover-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 52%, rgba(0, 0, 0, 0.72) 100%); pointer-events: none; }
+
+/* ---------- Painted genre scene behind each carousel (pictures in client/public/scenes) ---------- */
+.carousel-scene { position: absolute; z-index: 0; top: 0; overflow: hidden; }
+.carousel .arrow-vine { z-index: 1; }
+.carousel-scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 60%; }
+.carousel-scene::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.25)); }
+.carousel-stage.has-scene .carousel-track { position: relative; z-index: 1; }
+.carousel-stage.has-scene .carousel-arrow { z-index: 2; }
+@media (max-width: 999px) { .carousel-scene { clip-path: none !important; left: 0 !important; width: 100% !important; border-radius: 0 0 14px 14px; } }
+
+/* ---------- Log-in / sign-up: 3D book trio picture ---------- */
+.trio-img { display: block; width: min(340px, 80%); height: auto; filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.28)); }
+
+/* ---------- Meet the Leaders + Edit my profile ---------- */
+.leader-avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; overflow: hidden; background: var(--teal, #1f6f6a); color: #fff; font: italic 700 2.2rem Georgia, serif; border: 4px solid var(--card); box-shadow: 0 0 0 2px #b8924a, 0 8px 18px rgba(0, 0, 0, 0.3); }
+.leader-avatar.large { width: 150px; height: 150px; }
+.leader-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.leader-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; margin-top: 22px; }
+.leader-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 24px 20px 18px; background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); }
+.leader-card h2 { margin: 4px 0 0; font-size: 1.6rem; }
+.leader-card h3 { margin: 0 0 4px; font: 700 0.72rem system-ui, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-text); }
+.leader-card section { width: 100%; padding-top: 10px; border-top: 1px dashed var(--border); }
+.leader-card section p { margin: 0; }
+.lc-bio { font: italic 1.02rem Georgia, serif; margin: 0; }
+.lc-favs { font-style: italic; }
+.lc-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.lc-foot { width: 100%; margin-top: auto; padding-top: 10px; border-top: 1.5px solid var(--border); }
+.lc-foot p { margin: 2px 0; }
+.profile-form { display: grid; grid-template-columns: 190px 1fr; gap: 26px; margin-top: 14px; align-items: start; }
+.pf-photo { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.pf-genres { border: 0; padding: 0; margin: 0 0 14px; }
+.pf-genres legend { font-weight: 600; margin-bottom: 6px; }
+.pf-genres .lc-tags { justify-content: flex-start; }
+.tag-toggle { cursor: pointer; font: inherit; font-size: 0.85rem; }
+.tag-toggle.on { background: var(--teal, #1f6f6a); color: #fff; border-color: var(--teal, #1f6f6a); }
+@media (max-width: 640px) { .profile-form { grid-template-columns: 1fr; } }
+/* the 3D vine arches up the left and over the top of the book trio */
+.auth-art-top { position: relative; display: flex; justify-content: center; width: 100%; padding: 30px 0 0 40px; }
+.auth-art-top .trio-img { position: relative; z-index: 1; }
+.vine-img { position: absolute; z-index: 0; left: -40px; top: -40px; width: min(400px, 92%); height: auto; pointer-events: none; }
+[data-theme='dark'] .vine-img { filter: invert(0.88) sepia(0.35); }
+
+/* ---------- New picture logo in the top bar ---------- */
+.logo-img { display: block; height: 132px; width: auto; margin: -10px 0 -14px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); }
+@media (max-width: 640px) { .logo-img { height: 76px; } }
+
+/* ---------- Log-in / sign-up: 3D spine row along the bottom ---------- */
+.spine-row {
+  position: fixed; left: 0; right: 0; bottom: 0; height: 97px; z-index: 0; pointer-events: none;
+  background: url('/auth/spines.png') repeat-x left bottom / auto 100%;
+  filter: drop-shadow(0 -4px 8px rgba(0, 0, 0, 0.18));
+}
+@media (max-width: 640px) { .spine-row { height: 72px; } }
+
+/* Lighter dark-theme brown: cards a step lighter to match the warmer paper */
+:root[data-theme='dark'] { --card: #eadbb8; --board: #6e563e; }
+
+/* ---------- Dark theme: boxes, panels and form fields are light cream-tan with dark text ---------- */
+:root[data-theme='dark'] :is(.bx, .panel, .dash-tile, .leader-card, .leader-tile, .ai-bubble, .slot-option, .my-group, .modal-window,
+  input, select, textarea, .save-btn, .back-btn, .carousel-arrow, .icon-btn, .tile,
+  .btn:not(.btn-primary):not(.btn-accent):not(.btn-nav):not(.btn-nav-solid)) {
+  --ink: #2b2218; --muted: #5c4b38; --border: #3f3b36; --divider: #b8a47e; --teal-text: #17595a;
+  --tag-day-bg: #cfe3f2; --tag-day-fg: #1e4a6b; --tag-spot-bg: #e4d8bf; --tag-spot-fg: #4a3b22;
+  --error-bg: #f6dcd6; --error-fg: #7a1f1f; --tile-mix: 14%; --tile-ink: var(--accent);
+  color: var(--ink);
+}
+:root[data-theme='dark'] .modal-window { background: #eadbb8; border-color: #3f3b36; }
+:root[data-theme='dark'] :is(input, select, textarea)::placeholder { color: #7a6a52; }
+
+/* ---------- Meet the Leaders: book-stack border around the leader cards ---------- */
+.leaders-framed {
+  --lf-w: clamp(170px, 18vw, 270px);
+  position: relative; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 16px;
+  padding: 0 calc(var(--lf-w) + 14px); box-sizing: border-box;
+}
+.leaders-framed .lf-col { position: absolute; top: 0; bottom: 0; width: var(--lf-w); height: 100%; object-fit: fill; z-index: 0; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.3)); }
+.leaders-framed .lf-left { left: 6px; }
+.leaders-framed .lf-right { right: 6px; }
+.leaders-framed .lf-center { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: stretch; padding-top: 6px; }
+.leaders-framed .leader-cards { margin-top: 0; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.leaders-framed .lf-bottom { display: block; width: calc(100% + 28px); margin: 22px -14px 0; height: auto; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.3)); }
+@media (max-width: 1000px) { .leaders-framed { padding: 0; width: auto; margin-left: 0; } .leaders-framed .lf-col { display: none; } .leaders-framed .lf-bottom { width: 100%; margin: 18px 0 0; } }
+
+/* The mascot waves: the arm layer swings from the shoulder while the body sways */
+.ai-mascot-img { position: relative; }
+.mascot-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: bottom; display: block; }
+.mascot-arm { transform-origin: 71.8% 35.4%; animation: m-hello 1.1s ease-in-out infinite; }
+@keyframes m-hello { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(14deg); } }
+@media (prefers-reduced-motion: reduce) { .mascot-arm { animation: none; } }
+
+/* ---------- One leader's page (from "see more" on Meet the Leaders) ---------- */
+.lc-more { font-weight: 700; white-space: nowrap; }
+.leader-detail { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+.leader-detail > .panel { width: 100%; box-sizing: border-box; }
+.ld-head { display: flex; gap: 28px; align-items: flex-start; }
+.ld-about { flex: 1; min-width: 0; }
+.ld-about h1 { margin: 2px 0 8px; }
+.ld-about h3 { margin: 14px 0 4px; font: 700 0.72rem system-ui, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-text); }
+.ld-about p { margin: 0; }
+.ld-tags { justify-content: flex-start; }
+.ld-classes { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.ld-class { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; color: inherit; text-decoration: none; background: rgba(255, 255, 255, 0.25); }
+.ld-class:hover { outline: 3px solid var(--teal, #1f7a7a); outline-offset: 1px; }
+.ld-class .cover { width: 54px; flex: none; aspect-ratio: 2 / 3; }
+.ld-class .cover .cover-title, .ld-class .cover .cover-author { display: none; }
+.ld-class > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+@media (max-width: 640px) { .ld-head { flex-direction: column; align-items: center; text-align: center; } .ld-tags { justify-content: center; } }
+
+/* ---------- Meet the Leaders: clickable leader tiles ---------- */
+.leader-tile-link { color: inherit; text-decoration: none; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; gap: 8px; padding: 20px 16px 14px; }
+.leader-tile-link:hover, .leader-tile-link:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28); outline: 3px solid var(--teal, #1f7a7a); outline-offset: 2px; }
+.leader-tile-link .leader-avatar.large { width: 120px; height: 120px; }
+.leader-tile-link h2 { font-size: 1.4rem; }
+.lc-clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.leader-tile-link .lc-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.lc-open { font-weight: 700; color: var(--teal-text); white-space: nowrap; }
+.leaders-framed .leader-cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+/* ---------- Meet the Leaders: scroll through leaders inside the frame (one row tall) ---------- */
+.leader-scroll {
+  max-height: 410px; overflow-y: auto; padding: 8px 10px 12px; margin: 0 -10px;
+  scrollbar-width: thin; scrollbar-color: var(--teal, #1f6f6a) transparent;
+}
+.leader-scroll::-webkit-scrollbar { width: 10px; }
+.leader-scroll::-webkit-scrollbar-thumb { background: var(--teal, #1f6f6a); border-radius: 999px; }
+.leader-scroll:focus-visible { outline: 3px solid #4f8fe8; outline-offset: 2px; border-radius: 12px; }
+.lc-scroll-hint { margin: 6px 0 0; text-align: center; font: 600 0.85rem system-ui, sans-serif; color: var(--teal-text); }
+.lc-scroll-hint.up { margin: 0 0 6px; }
+
+/* ---------- Leader tools and Administrator: desk-scene U border ----------
+   All three pieces live in one fixed layer and are placed by DeskFrame.jsx, so they always line up. */
+.desk-sides { position: fixed; left: 0; right: 0; bottom: 0; height: 0; z-index: 0; pointer-events: none; }
+.desk-side { position: absolute; height: auto; display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22)); }
+.desk-floor { filter: none; will-change: transform; }
+.desk-room { flex: none; }
+.desk-bottom-small { display: none; }
+@media (max-width: 1000px) {
+  .desk-sides, .desk-room { display: none; }
+  .desk-bottom-small { display: block; width: 100%; height: auto; margin: 24px 0 -40px; }
+}
+
+/* ---------- Classes still finding a leader: "Coming soon" with a note underneath (not greyed out) ---------- */
+.btn.leader-soon { opacity: 0.85; }
+.finding-leader { display: block; text-align: center; margin-top: -2px; font: italic 600 0.95rem 'Snell Roundhand', 'Apple Chancery', 'Segoe Script', Georgia, serif; color: var(--teal-text); }
+.lt-problems { border: 1.5px solid #a33; background: rgba(176, 52, 40, 0.1); border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; color: #7a1f1f; }
+.lt-problems ul { margin: 4px 0 0; padding-left: 18px; }

@@ -24,7 +24,7 @@ export default function BrowsePage() {
   const [genres, setGenres] = useState([]);
   const [groups, setGroups] = useState([]);
   const [goals, setGoals] = useState({});
-  const [status, setStatus] = useState(null); // { soon: Set, started: Set } (null until loaded)
+  const [status, setStatus] = useState(null); // { soon: Set, started: Set, needsLeader: Set } (null until loaded)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -37,7 +37,7 @@ export default function BrowsePage() {
   // "started" (week 3 or later, so joining is closed)
   useEffect(() => {
     goalService.getBrowsable()
-      .then((data) => setStatus({ soon: new Set(data.comingSoon), started: new Set(data.started) }))
+      .then((data) => setStatus({ soon: new Set(data.comingSoon), started: new Set(data.started), needsLeader: new Set(data.needsLeader || []) }))
       .catch(() => {});
   }, []);
 
@@ -77,6 +77,7 @@ export default function BrowsePage() {
   const shown = groups;
   const soon = status ? status.soon : new Set();
   const started = status ? status.started : new Set();
+  const needsLeader = status ? status.needsLeader : new Set();
   const byGenre = shown.reduce((acc, group) => {
     (acc[group.book.genre] = acc[group.book.genre] || []).push(group);
     return acc;
@@ -84,7 +85,7 @@ export default function BrowsePage() {
 
   // The Top Recommended row only shows when nobody is searching or filtering
   const noFilters = !filters.q && !filters.genre && filters.day === '';
-  const topGroups = TOP_PICKS.map((title) => shown.find((g) => g.book.title === title && !soon.has(String(g.id)) && !started.has(String(g.id)))).filter(Boolean);
+  const topGroups = TOP_PICKS.map((title) => shown.find((g) => g.book.title === title && !soon.has(String(g.id)) && !started.has(String(g.id)) && !needsLeader.has(String(g.id)))).filter(Boolean);
 
   return (
     <div>
@@ -102,12 +103,12 @@ export default function BrowsePage() {
       )}
 
       {!loading && !error && noFilters && topGroups.length >= 3 && (
-        <BookCarousel title="Top Recommended" groups={topGroups} zone={viewerZone(user)} goals={goals} soon={soon} started={started} />
+        <BookCarousel title="Top Recommended" groups={topGroups} zone={viewerZone(user)} goals={goals} soon={soon} started={started} needsLeader={needsLeader} />
       )}
 
       {!loading &&
         Object.entries(byGenre).sort(([a], [b]) => genreRank(a) - genreRank(b)).map(([genre, list]) => (
-          <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} goals={goals} soon={soon} started={started} />
+          <BookCarousel key={genre} title={genre} groups={list} zone={viewerZone(user)} goals={goals} soon={soon} started={started} needsLeader={needsLeader} />
         ))}
     </div>
   );

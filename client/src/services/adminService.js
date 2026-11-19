@@ -28,3 +28,4 @@ export const sendFeedback = (body) => api.post('/feedback', body);
 // Leaders volunteering to lead classes
 export const getLeaderRequests = () => api.get('/admin/leader-requests');
 export const decideLeaderRequest = (id, decision) => api.put(`/admin/leader-requests/${id}`, { decision });
+export const getLeaders = () => api.get('/admin/leaders');

@@ -71,6 +71,7 @@ const completePlans = async (groups) => {
 // Can a new member join this group right now? { open, reason }
 const joinStatus = async (group) => {
   if (group.status === 'finished') return { open: false, reason: 'This group has already finished.' };
+  if (!group.leader) return { open: false, reason: 'This class is coming soon. The club is still finding a leader for it.' };
   const book = await Book.findById(group.book).select('retired');
   if (book?.retired) return { open: false, reason: 'This book is no longer offered by the club.' };
   if (group.currentWeek >= JOIN_CLOSES_WEEK) {
@@ -87,17 +88,20 @@ const joinStatus = async (group) => {
 //   open       - the reading plan is complete and the group has not reached week 3: people can join
 //   comingSoon - the leader has not finished the weekly plan yet (greyed out; the plan is due before the start date)
 //   started    - the group has reached week 3, so joining is closed (greyed out; "notify me when a new group starts")
+//   needsLeader - the group has no leader yet ("Coming soon" with "Finding a leader" underneath; not greyed)
 const browseStatus = async () => {
   const retiredIds = await Book.distinct('_id', { retired: true });
-  const groups = await ReadingGroup.find({ status: { $ne: 'finished' }, book: { $nin: retiredIds } }).select('totalWeeks currentWeek status');
+  const groups = await ReadingGroup.find({ status: { $ne: 'finished' }, book: { $nin: retiredIds } }).select('totalWeeks currentWeek status leader');
   const complete = await completePlans(groups);
   const ids = (list) => list.map((g) => String(g._id));
+  const needsLeader = groups.filter((g) => !g.leader && g.currentWeek < JOIN_CLOSES_WEEK);
   const started = groups.filter((g) => g.currentWeek >= JOIN_CLOSES_WEEK);
-  const waiting = groups.filter((g) => g.currentWeek < JOIN_CLOSES_WEEK);
+  const waiting = groups.filter((g) => g.leader && g.currentWeek < JOIN_CLOSES_WEEK);
   return {
     open: ids(waiting.filter((g) => complete.has(String(g._id)))),
     comingSoon: ids(waiting.filter((g) => !complete.has(String(g._id)))),
     started: ids(started),
+    needsLeader: ids(needsLeader),
   };
 };
 

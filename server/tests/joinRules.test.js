@@ -14,7 +14,7 @@ const { joinStatus, listGoals, browseStatus, JOIN_CLOSES_WEEK } = require('../sr
 const meetingsFor = (groupId, goals) => goals.map((chapters, i) => ({ group: groupId, weekNumber: i + 1, chapters }));
 const fakeMeetingQuery = (rows) => ({ select: jest.fn().mockResolvedValue(rows) });
 
-const group = (over = {}) => ({ _id: 'g1', totalWeeks: 3, currentWeek: 0, status: 'open', ...over });
+const group = (over = {}) => ({ _id: 'g1', leader: 'u1', totalWeeks: 3, currentWeek: 0, status: 'open', ...over });
 
 // By default the book is on offer (not retired) and no books are retired
 const fakeBook = (retired) => ({ select: jest.fn().mockResolvedValue({ retired }) });
@@ -42,6 +42,12 @@ describe('joinStatus', () => {
     const result = await joinStatus(group());
     expect(result.open).toBe(false);
     expect(result.reason).toMatch(/no longer offered/i);
+  });
+
+  test('a group that is still finding a leader is not open yet', async () => {
+    const result = await joinStatus(group({ leader: null }));
+    expect(result.open).toBe(false);
+    expect(result.reason).toMatch(/finding a leader/i);
   });
 
   test('a group with an unfinished reading plan is not open yet', async () => {
@@ -95,5 +101,6 @@ describe('browseStatus', () => {
     expect(result.open).toEqual(['open']);
     expect(result.comingSoon).toEqual(['soon']);
     expect(result.started).toEqual(['late']);
+    expect(result.needsLeader).toEqual([]);
   });
 });

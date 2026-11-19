@@ -9,10 +9,12 @@ import InkVine from './InkVine.jsx';
 export default function AuthLayout({ children }) {
   return (
     <div className="auth-page">
-      <InkVine />
       <div className="auth-grid">
         <section className="auth-art">
-          <BookTrio />
+          <div className="auth-art-top">
+            <InkVine />
+            <BookTrio />
+          </div>
           <h2>Your next chapter starts here</h2>
           <p className="muted">Pick a book, join its weekly group, and never miss a meeting.</p>
           <FeatureList />

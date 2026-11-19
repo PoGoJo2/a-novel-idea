@@ -9,7 +9,7 @@ const OneOnOneSlot = require('../models/OneOnOneSlot');
 const AppError = require('../utils/AppError');
 const { generateMeetings } = require('./meetingService');
 const { browseStatus, completePlans } = require('./goalService');
-const { clashWith, activeGroupsOf } = require('./leaderService');
+const { scheduleProblem, activeGroupsOf, MAX_PER_DAY } = require('./leaderService');
 
 // Numbers for the Administrator page
 const getStats = async () => {
@@ -134,7 +134,12 @@ const updateGroup = async (id, body) => {
   const changesSchedule = ['startDate', 'totalWeeks', 'timeSlots'].some((k) => body[k] !== undefined);
   if (started && changesSchedule) throw new AppError('This group has already started, so its start date, number of weeks and meeting times are locked. You can still change the leader, class sizes and class length.', 400);
 
-  if (body.leaderId) group.leader = (await mustFindLeader(body.leaderId))._id;
+  let leaderName = '';
+  if (body.leaderId) {
+    const chosen = await mustFindLeader(body.leaderId);
+    group.leader = chosen._id;
+    leaderName = chosen.name;
+  }
   if (body.startDate !== undefined) group.startDate = toDateOnly(body.startDate);
   if (body.totalWeeks !== undefined) group.totalWeeks = Number(body.totalWeeks);
   if (body.sessionMinutes !== undefined) group.sessionMinutes = Number(body.sessionMinutes);
@@ -157,6 +162,13 @@ const updateGroup = async (id, body) => {
     group.timeSlots = body.timeSlots.map(cleanSlot);
   }
 
+  // The leader cannot double-book a time or lead more than 3 classes in one day
+  if (group.leader && group.status !== 'finished' && (body.leaderId || changesSchedule || body.sessionMinutes !== undefined)) {
+    if (!leaderName) leaderName = (await User.findById(group.leader).select('name'))?.name || 'This leader';
+    const problem = scheduleProblem(group, await activeGroupsOf(group.leader), leaderName);
+    if (problem) throw new AppError(`${problem}. Choose another leader or another time.`, 400);
+  }
+
   try {
     await group.save(); // the model's own rules (1-4 times, distinct, HH:MM) run here
   } catch (err) {
@@ -177,6 +189,9 @@ const createGroup = async (body) => {
   if (book.retired) throw new AppError('That book is retired. Bring it back first.', 400);
   const leader = await mustFindLeader(body.leaderId);
   const slots = Array.isArray(body.timeSlots) ? body.timeSlots.map(cleanSlot) : [];
+  const draft = { _id: null, startDate: toDateOnly(body.startDate), totalWeeks: Number(body.totalWeeks) || 8, sessionMinutes: Number(body.sessionMinutes) || 60, timeSlots: slots };
+  const problem = scheduleProblem(draft, await activeGroupsOf(leader._id), leader.name);
+  if (problem) throw new AppError(`${problem}. Choose another leader or another time.`, 400);
 
   let group;
   try {
@@ -330,7 +345,7 @@ const decideLeaderRequest = async (id, decision) => {
   const group = await ReadingGroup.findById(request.group).populate('book', 'title');
   if (!group || group.status !== 'open' || group.currentWeek > 0) throw new AppError('That class has already started, so its leader can no longer change.', 400);
   const leader = await mustFindLeader(request.leader);
-  const clash = clashWith(group, await activeGroupsOf(leader._id));
+  const clash = scheduleProblem(group, await activeGroupsOf(leader._id), leader.name);
   if (clash) throw new AppError(`${clash}. Decline this request or change the meeting time first.`, 400);
 
   const previous = group.leader;
@@ -345,8 +360,60 @@ const decideLeaderRequest = async (id, decision) => {
   return { status: 'approved' };
 };
 
+// ---------- leaders overview ----------
+// One entry per leader: what they lead now, how busy each day is, and a few totals.
+const listLeaders = async () => {
+  const leaders = await User.find({ role: 'leader', suspended: { $ne: true } }).select('name email').sort({ name: 1 });
+  const ids = leaders.map((l) => l._id);
+  const [groups, pending] = await Promise.all([
+    ReadingGroup.find({ leader: { $in: ids } }).populate('book', 'title author genre coverUrl accentColors'),
+    LeaderRequest.aggregate([{ $match: { leader: { $in: ids }, status: 'pending' } }, { $group: { _id: '$leader', n: { $sum: 1 } } }]),
+  ]);
+  const activeIds = groups.filter((g) => g.status !== 'finished').map((g) => g._id);
+  const readers = await Membership.aggregate([
+    { $match: { group: { $in: activeIds }, status: 'active' } },
+    { $group: { _id: '$group', n: { $sum: 1 } } },
+  ]);
+  const readersOf = new Map(readers.map((r) => [String(r._id), r.n]));
+  const pendingOf = new Map(pending.map((p) => [String(p._id), p.n]));
+
+  return leaders.map((l) => {
+    const mine = groups.filter((g) => String(g.leader) === String(l._id));
+    const active = mine.filter((g) => g.status !== 'finished')
+      .sort((a, b) => (a.book?.title || '').localeCompare(b.book?.title || '') || a.currentWeek - b.currentWeek);
+    // Classes that break the scheduling rules (for example ones set up before the rules existed)
+    const problems = [];
+    active.forEach((g, i) => {
+      const problem = scheduleProblem(g, active.slice(0, i), l.name);
+      if (problem) problems.push(`${g.book?.title || 'A class'}: ${problem}`);
+    });
+    const perDay = [0, 0, 0, 0, 0, 0, 0];
+    active.forEach((g) => g.timeSlots.forEach((s) => { perDay[s.dayOfWeek] += 1; }));
+    return {
+      id: l._id,
+      name: l.name,
+      email: l.email,
+      leading: active.length,
+      finished: mine.length - active.length,
+      readers: active.reduce((n, g) => n + (readersOf.get(String(g._id)) || 0), 0),
+      requests: pendingOf.get(String(l._id)) || 0,
+      perDay,
+      problems,
+      maxPerDay: MAX_PER_DAY,
+      classes: active.map((g) => ({
+        id: g._id,
+        book: { title: g.book?.title, author: g.book?.author, genre: g.book?.genre, coverUrl: g.book?.coverUrl, accentColors: g.book?.accentColors },
+        startDate: g.startDate,
+        currentWeek: g.currentWeek,
+        totalWeeks: g.totalWeeks,
+        timeSlots: g.timeSlots.map((s) => ({ dayOfWeek: s.dayOfWeek, startTime: s.startTime })),
+      })),
+    };
+  });
+};
+
 module.exports = {
   getStats, listGroups, updateGroup, createGroup, listBooks, createBook, setBookRetired,
   listUsers, setUserRole, setUserSuspended, listFeedback, setFeedbackStatus,
-  listLeaderRequests, decideLeaderRequest,
+  listLeaderRequests, decideLeaderRequest, listLeaders, syncMeetings,
 };

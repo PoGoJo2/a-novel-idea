@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import LeaderDecor from '../components/LeaderDecor.jsx';
+import { DeskSides, DeskBottom } from '../components/DeskFrame.jsx';
 import LeaderClasses from '../components/leader/LeaderClasses.jsx';
 import LeaderVolunteer from '../components/leader/LeaderVolunteer.jsx';
 import LeaderRecord from '../components/leader/LeaderRecord.jsx';
+import LeaderProfileEditor from '../components/leader/LeaderProfileEditor.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
-const TABS = [['classes', 'My classes'], ['volunteer', 'Volunteer to lead'], ['record', 'My record']];
+const TABS = [['classes', 'My classes'], ['volunteer', 'Volunteer to lead'], ['record', 'My record'], ['profile', 'Edit my profile']];
 
 // Leader page: the classes I lead, classes I can volunteer for, and my record of finished classes.
 export default function LeaderPage() {
@@ -17,8 +18,7 @@ export default function LeaderPage() {
 
   return (
     <div className="dashboard leader-page">
-      <LeaderDecor side="left" />
-      <LeaderDecor side="right" />
+      <DeskSides set="leader" />
       <p className="eyebrow">Leader tools</p>
       <h1>The Leader&rsquo;s Corner</h1>
       <hr className="rule" />
@@ -30,6 +30,8 @@ export default function LeaderPage() {
       {tab === 'classes' && <LeaderClasses onGoVolunteer={() => setTab('volunteer')} />}
       {tab === 'volunteer' && <LeaderVolunteer />}
       {tab === 'record' && <LeaderRecord />}
+      {tab === 'profile' && <LeaderProfileEditor />}
+      <DeskBottom set="leader" />
     </div>
   );
 }

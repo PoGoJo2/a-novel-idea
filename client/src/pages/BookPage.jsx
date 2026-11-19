@@ -111,7 +111,7 @@ export default function BookPage() {
           <section className="panel" aria-labelledby="join-title">
             <h2 id="join-title">{membership ? "You're in this group" : 'Join this group'}</h2>
             <p className="muted">
-              Led by {group.leader.name} · {formatStart(group.startDate).past ? 'Started' : 'Starts'} {formatStart(group.startDate).text} · {group.totalWeeks} weeks · {group.sessionMinutes}-minute video meetings
+              {group.leader ? `Led by ${group.leader.name}` : 'Finding a leader'} · {formatStart(group.startDate).past ? 'Started' : 'Starts'} {formatStart(group.startDate).text} · {group.totalWeeks} weeks · {group.sessionMinutes}-minute video meetings
             </p>
 
             <TimeSlotPicker

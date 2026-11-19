@@ -1,18 +1,33 @@
-import { SHELF_LEFT, SHELF_RIGHT } from './libraryArt.js';
+import { useEffect, useState } from 'react';
 
-// Slim copies (own gradient ids, cropped to fill the height) for narrow windows.
-const slim = (svg, side) =>
-  svg.replaceAll(`vshade${side}`, `vshade${side}s`).replace('xMidYMax meet', 'xMidYMax slice');
-
-// Tall bookshelves in both side margins of the My Library page.
-// Wide windows get the full bookcases; narrow windows get slim strips so the room still shows.
+// Two tall bookcases down both sides of the My Library page, with readers already on the shelves.
+// They run the full length of the page: from under the top bar down to the reading-room floor.
+// Pictures live in client/public/characters (made with an AI image tool).
 export default function LibraryShelves() {
+  const [box, setBox] = useState({ top: 80, height: 800 });
+
+  useEffect(() => {
+    const measure = () => {
+      const nav = document.querySelector('.nav');
+      const floor = document.querySelector('.reading-floor');
+      const top = nav ? nav.getBoundingClientRect().bottom + window.scrollY + 10 : 0;
+      const bottom = floor ? floor.getBoundingClientRect().top + window.scrollY + 6 : document.documentElement.scrollHeight;
+      setBox({ top, height: Math.max(300, bottom - top) });
+    };
+    measure();
+    const watcher = new ResizeObserver(measure);
+    watcher.observe(document.body);
+    window.addEventListener('resize', measure);
+    return () => {
+      watcher.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
+
   return (
-    <div className="library-shelves" aria-hidden="true">
-      <div className="shelf-col shelf-full shelf-left" dangerouslySetInnerHTML={{ __html: SHELF_LEFT }} />
-      <div className="shelf-col shelf-full shelf-right" dangerouslySetInnerHTML={{ __html: SHELF_RIGHT }} />
-      <div className="shelf-col shelf-slim shelf-left" dangerouslySetInnerHTML={{ __html: slim(SHELF_LEFT, 'L') }} />
-      <div className="shelf-col shelf-slim shelf-right" dangerouslySetInnerHTML={{ __html: slim(SHELF_RIGHT, 'R') }} />
+    <div className="library-shelves" aria-hidden="true" style={{ top: box.top, height: box.height }}>
+      <img className="book-case case-left" src="/characters/case-left.png" alt="" draggable="false" />
+      <img className="book-case case-right" src="/characters/case-right.png" alt="" draggable="false" />
     </div>
   );
 }

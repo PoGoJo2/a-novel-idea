@@ -34,7 +34,7 @@ const seatCounts = async (groupIds) => {
 const formatGroup = (group, counts, nextMeetings = new Map()) => ({
   id: group._id,
   book: formatBook(group.book),
-  leader: { id: group.leader._id, name: group.leader.name },
+  leader: group.leader ? { id: group.leader._id, name: group.leader.name } : null, // null = still finding a leader
   sessionMinutes: group.sessionMinutes,
   startDate: group.startDate,
   totalWeeks: group.totalWeeks,

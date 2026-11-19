@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
     savedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
     // Books the reader wants to hear about when a new group starts (the group they wanted has already begun)
     notifyBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
+    // Leader profile, shown on the public "Meet the Leaders" page
+    profile: {
+      photo: { type: String, default: '', maxlength: 400000 }, // a small picture: a web path or a resized data URL
+      bio: { type: String, default: '', trim: true, maxlength: 600 },
+      history: { type: String, default: '', trim: true, maxlength: 800 },
+      interests: [{ type: String, trim: true, maxlength: 60 }], // favorite genres
+      favoriteReads: { type: String, default: '', trim: true, maxlength: 300 },
+    },
   },
   { timestamps: true }
 );

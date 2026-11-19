@@ -22,6 +22,7 @@ router.get('/users', c.users);
 router.put('/users/:id/role', c.setRole);
 router.put('/users/:id/suspend', c.suspend);
 
+router.get('/leaders', c.leaders);
 router.get('/leader-requests', c.leaderRequests);
 router.put('/leader-requests/:id', c.decideLeaderRequest);
 

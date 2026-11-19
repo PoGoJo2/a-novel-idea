@@ -13,6 +13,8 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import LeaderPage from './pages/LeaderPage.jsx';
 import LibraryPage from './pages/LibraryPage.jsx';
+import LeadersPage from './pages/LeadersPage.jsx';
+import LeaderDetailPage from './pages/LeaderDetailPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
@@ -20,6 +22,7 @@ export default function App() {
   const path = useLocation().pathname;
   const onLibrary = path === '/library';
   const onMeetings = path === '/dashboard';
+  const onDesk = path === '/leader' || path === '/admin';
   return (
     <>
       <PaperBackground />
@@ -27,10 +30,26 @@ export default function App() {
       {onLibrary && <LibraryShelves />}
       {onMeetings && <BookStacks />}
       <Navbar />
-      <main className={onLibrary || onMeetings ? 'page has-sides' : 'page'}>
+      <main className={onLibrary || onMeetings || onDesk ? 'page has-sides' : 'page'}>
         <Routes>
           <Route path="/" element={<BrowsePage />} />
           <Route path="/books/:id" element={<BookPage />} />
+          <Route
+            path="/leaders"
+            element={
+              <ProtectedRoute>
+                <LeadersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaders/:id"
+            element={
+              <ProtectedRoute>
+                <LeaderDetailPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route

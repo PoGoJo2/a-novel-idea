@@ -7,10 +7,11 @@ import AdminGroups from '../components/admin/AdminGroups.jsx';
 import AdminBooks from '../components/admin/AdminBooks.jsx';
 import AdminPeople from '../components/admin/AdminPeople.jsx';
 import AdminFeedback from '../components/admin/AdminFeedback.jsx';
+import AdminLeaders from '../components/admin/AdminLeaders.jsx';
 import AdminLeaderRequests from '../components/admin/AdminLeaderRequests.jsx';
-import AdminTools, { GearCluster } from '../components/admin/AdminTools.jsx';
+import { DeskSides, DeskBottom } from '../components/DeskFrame.jsx';
 
-const TABS = [['overview', 'Overview'], ['groups', 'Groups'], ['books', 'Books'], ['people', 'People'], ['feedback', 'Complaints & reviews']];
+const TABS = [['overview', 'Overview'], ['groups', 'Groups'], ['books', 'Books'], ['people', 'People'], ['leaders', 'Leaders'], ['feedback', 'Complaints & reviews']];
 
 const Stat = ({ label, value }) => (
   <div className="stat">
@@ -36,9 +37,7 @@ export default function AdminPage() {
 
   return (
     <div className="dashboard admin-page">
-      <AdminTools side="left" />
-      <AdminTools side="right" />
-      <GearCluster />
+      <DeskSides set="admin" />
       <p className="eyebrow">Administrator</p>
       <h1>The club at a glance</h1>
       <hr className="rule" />
@@ -51,6 +50,7 @@ export default function AdminPage() {
       {tab === 'groups' && <AdminGroups key={groupsKey} />}
       {tab === 'books' && <AdminBooks />}
       {tab === 'people' && <AdminPeople />}
+      {tab === 'leaders' && <AdminLeaders />}
       {tab === 'feedback' && <AdminFeedback />}
       {tab === 'overview' && <ErrorMessage message={error} />}
       {tab === 'overview' && !stats && !error && <Loader />}
@@ -86,6 +86,7 @@ export default function AdminPage() {
           </section>
         </>
       )}
+      <DeskBottom set="admin" />
     </div>
   );
 }

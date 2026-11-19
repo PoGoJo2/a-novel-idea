@@ -24,3 +24,10 @@ describe('Leader routes need a login', () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe('Leader profile editing needs a login', () => {
+  test.each([['get', '/api/leaders'], ['get', `/api/leaders/${FAKE_ID}`], ['get', '/api/leaders/me'], ['put', '/api/leaders/me']])('%s %s is refused with 401', async (method, url) => {
+    const res = await request(app)[method](url).send({});
+    expect(res.status).toBe(401);
+  });
+});

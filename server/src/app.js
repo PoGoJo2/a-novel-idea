@@ -16,13 +16,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const leaderRoutes = require('./routes/leaderRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' })); // room for a small profile photo
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 
 // Health check: proves the server is up (also handy after deployment)
@@ -42,6 +43,7 @@ app.use('/api', goalRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/leader', leaderRoutes);
+app.use('/api/leaders', profileRoutes); // public: Meet the Leaders
 
 // These two must come last
 app.use(notFound);

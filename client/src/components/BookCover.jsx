@@ -2,12 +2,20 @@ import { useId } from 'react';
 import CoverArt from './CoverArt.jsx';
 import { bookStyle } from '../utils/time.js';
 
-// Shows the cover image when a book has one; otherwise draws abstract artwork from the book's colors.
+// Shows the book's painted cover picture when it has one (client/public/covers), otherwise draws artwork
+// from the book's colors. Either way the title and author are printed over the bottom of the cover.
 export default function BookCover({ book, className = '' }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
 
   if (book.coverUrl) {
-    return <img className={`cover cover-img ${className}`} src={book.coverUrl} alt={`Cover of ${book.title}`} />;
+    return (
+      <div className={`cover cover-art has-photo ${className}`} role="img" aria-label={`Cover of ${book.title}`}>
+        <img className="cover-photo" src={book.coverUrl} alt="" loading="lazy" draggable="false" />
+        <span className="cover-shade" aria-hidden="true" />
+        <span className="cover-title">{book.title}</span>
+        <span className="cover-author">{book.author}</span>
+      </div>
+    );
   }
 
   return (

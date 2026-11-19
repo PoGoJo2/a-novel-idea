@@ -16,7 +16,7 @@ export default function MeetingCard({ membership, zone }) {
       </div>
       <div className="my-info">
         <h3>{group.book.title}</h3>
-        <p className="muted">{group.book.author} · led by {group.leader.name}</p>
+        <p className="muted">{group.book.author} · {group.leader ? `led by ${group.leader.name}` : 'finding a leader'}</p>
 
         <div className="progress" role="img" aria-label={`Week ${group.currentWeek} of ${group.totalWeeks}`}>
           <div className="progress-fill" style={{ width: `${progress}%` }} />

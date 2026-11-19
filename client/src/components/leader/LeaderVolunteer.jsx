@@ -65,7 +65,7 @@ export default function LeaderVolunteer() {
                 {g.mine && <span className="tag status-open">You lead this</span>}
                 {!g.mine && st === 'pending' && <span className="tag status-soon">Request sent</span>}
                 {!g.mine && st === 'declined' && <span className="tag status-finished">Not approved</span>}
-                {!g.mine && st !== 'pending' && st !== 'declined' && <span className="tag">Led by {g.leader?.name || 'no one'}</span>}
+                {!g.mine && st !== 'pending' && st !== 'declined' && <span className="tag">{g.leader ? `Led by ${g.leader.name}` : 'Needs a leader'}</span>}
 
                 {!g.mine && st === 'pending' && (
                   <button type="button" className="btn btn-small" disabled={busy} onClick={() => run(() => leader.withdrawRequest(g.id), 'Request withdrawn.')}>Withdraw</button>
