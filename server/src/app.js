@@ -1,5 +1,6 @@
 // Builds the Express app (kept separate from server.js so tests can import it).
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -29,6 +30,22 @@ if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 // Health check: proves the server is up (also handy after deployment)
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'A Novel Idea API is running' });
+});
+
+// Make sure the database is connected before any route runs.
+// Locally, server.js connects at start-up. On Vercel only this app runs, so it connects on the first
+// request and then reuses that connection. (Skipped in tests, which have no database.)
+let connecting = null;
+app.use(async (req, res, next) => {
+  if (process.env.NODE_ENV === 'test' || mongoose.connection.readyState === 1) return next();
+  try {
+    connecting = connecting || mongoose.connect(process.env.MONGODB_URI);
+    await connecting;
+    return next();
+  } catch (err) {
+    connecting = null; // try again on the next request
+    return next(err);
+  }
 });
 
 app.use('/api/auth', authRoutes);
